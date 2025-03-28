@@ -959,6 +959,173 @@ class analysis_tools():
             [{'subtitle':"", 'xlabel':"gate num", 'ylabel':"|1> populations"}]
         )
         Plotter.export_results()
+    
+    def TomogateError_ana(self, var: str, transition_freq_Hz: float = None):
+            
+        """ 使用 z 基底作為訓練數據，並對 x, y, z 基底進行相同的 GMM 分析 """
+        bases = ["x", "y", "z"]  # 需要分析的基底
+        self.qubit = var
+        self.fq = transition_freq_Hz  
+        self.md = GMMROFidelity()
+
+        # **1. 使用 `z` 基底的 `pulse_num=1` 作為 GMM 訓練數據**
+        train_key = f"{var}_z"
+        if train_key not in self.ds:
+            raise ValueError(f"訓練數據 {train_key} 不存在於數據集")
+
+        datas_z = moveaxis(array(self.ds[train_key]), 0, 1) * 1000  # shape (pulse_num, IQ, shots)
+        p0_data = datas_z[0]  # 取第一個 pulse_num 作為基態
+        p1_data = datas_z[1]  # 取第二個 pulse_num 作為激發態
+
+        self.train_set = DataArray(
+            moveaxis(array([p0_data, p1_data]), 0, 1),
+            coords=[("mixer", ["I", "Q"]), ("prepared_state", [0, 1]), ("index", arange(p0_data.shape[-1]))]
+        )
+        self.md._import_data(self.train_set)
+        self.md._start_analysis()
+        self.g1d_fidelity = self.md.export_G1DROFidelity()
+
+        # **2. 針對 x, y, z 進行 GMM 分析**
+        for basis in bases:
+            key = f"{var}_{basis}"
+            if key not in self.ds:
+                print(f"Warning: {key} not found in dataset")
+                continue
+
+            datas = moveaxis(array(self.ds[key]), 0, 1) * 1000  # shape (pulse_num, IQ, shots)
+            gate_num = array(self.ds.coords["pulse_num"])
+
+            lis = []
+            gates = []
+            for idx, data in enumerate(datas):
+                if idx > 0:  # idx = 0 是基態
+                    lis.append(list(moveaxis(array([data]), 0, 1)))  # gate num, mixer, prepared_state, index
+                    gates.append(gate_num[idx])
+
+            da = DataArray(
+                moveaxis(array(lis), 0, 1),
+                coords=[("mixer", array(["I", "Q"])), ("gate_num", array(gates)), 
+                        ("prepared_state", array([0])), ("index", arange(p1_data.shape[-1]))]
+            )
+            
+            self.md.discriminator._import_data(da)
+            self.md.discriminator._start_analysis()
+            ans = self.md.discriminator._export_result()
+
+            p_rec = []
+            for dim_1_data in ans:
+                for dim_2_data in dim_1_data:
+                    p = list(dim_2_data).count(1) / len(list(dim_2_data))
+                    p_rec.append(p)
+
+            print(array(p_rec).shape)
+            print(array(gates).shape)
+
+            # **3. 擬合數據**
+            self.params = gate_phase_fit_analysis(array(p_rec), array(gates))
+            self.fit_packs[basis] = {
+                "data": self.params["data"].values,
+                "freeDu": self.params.coords["freeDu"].values,
+                "fitting": self.params["fitting"].values,
+                "f": self.params.attrs["f"],
+                "tau": self.params.attrs["T2_fit"],
+                "para_fit": self.params.coords['para_fit'].values
+
+            }
+
+            print(f"🎯 {basis} 擬合成功！f = {self.fit_packs[basis]['f']}, tau = {self.fit_packs[basis]['tau']}")
+    def TomogateError_plot(self, save_pic_path: str = None):
+        """ 繪製 `x, y, z` 三個基底的 Gate Error 數據 """
+        import matplotlib.pyplot as plt
+
+        bases = ["x", "y", "z"]
+        fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+
+        for idx, basis in enumerate(bases):
+            if basis not in self.fit_packs:
+                print(f"Warning: No fit data for {basis} basis.")
+                continue
+
+            data = self.fit_packs[basis]["data"]
+            gate_num = self.fit_packs[basis]["freeDu"]
+            fitting = self.fit_packs[basis]["fitting"]
+            fit_x = self.fit_packs[basis]["para_fit"]
+
+            ax: plt.Axes = axs[idx]
+            ax.scatter(gate_num, data, label="Measured Data", color="blue", alpha=0.6)
+            ax.plot(fit_x, fitting, label=f"f={round(self.fit_packs[basis]['f']*1000,3)} mrad, tau={round(self.fit_packs[basis]['tau'],2)}", color="red")
+
+            ax.set_title(f"{self.qubit} - {basis} Basis")
+            ax.set_xlabel("Gate Num")
+            ax.set_ylabel("|1> Population")
+            ax.legend()
+            ax.grid()
+
+        plt.tight_layout()
+        if save_pic_path:
+            plt.savefig(save_pic_path + "_TomoGateError.png")
+        plt.show()
+
+        import matplotlib.pyplot as plt
+        from mpl_toolkits.mplot3d import Axes3D
+        import numpy as np
+        # **3D 圖部分**
+        fig_3d = plt.figure(figsize=(8, 8))
+        ax_3d = fig_3d.add_subplot(111, projection='3d')
+
+        # 取得 x, y, z 的 data 值
+        x_data = self.fit_packs["x"]["data"] if "x" in self.fit_packs else np.zeros_like(gate_num)
+        y_data = self.fit_packs["y"]["data"] if "y" in self.fit_packs else np.zeros_like(gate_num)
+        z_data = self.fit_packs["z"]["data"] if "z" in self.fit_packs else np.zeros_like(gate_num)
+
+        # 設定顏色（使用 gate_num 漸變）
+        scatter = ax_3d.scatter(x_data, y_data, z_data, c=gate_num, cmap='viridis', alpha=0.8)
+        fig_3d.colorbar(scatter, ax=ax_3d, label="Gate Num")
+
+        # 計算與球心 (0.5, 0.5, 0.5) 的距離
+        distances = 2 * np.sqrt((x_data - 0.5) ** 2 + (y_data - 0.5) ** 2 + (z_data - 0.5) ** 2)
+        
+        # 畫半徑 0.5，中心在 (0.5, 0.5, 0.5) 的球
+        u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+        sphere_x = 0.5 + 0.5 * np.cos(u) * np.sin(v)
+        sphere_y = 0.5 + 0.5 * np.sin(u) * np.sin(v)
+        sphere_z = 0.5 + 0.5 * np.cos(v)
+        ax_3d.plot_wireframe(sphere_x, sphere_y, sphere_z, color="gray", alpha=0.3)
+
+        ax_3d.set_xlabel("X Axis")
+        ax_3d.set_ylabel("Y Axis")
+        ax_3d.set_zlabel("Z Axis")
+        ax_3d.set_title("3D Visualization of Tomography Gate Error")
+
+        if save_pic_path:
+            plt.savefig(save_pic_path + "_TomoGateError_3D.png")
+        plt.show()
+
+        # **新增距離 vs. Gate 數量的 2D 圖**
+        fig_dist = plt.figure(figsize=(8, 6))
+        ax_dist = fig_dist.add_subplot(111)
+        ax_dist.scatter(gate_num, distances, color='blue', alpha=0.6, label="length")
+        ax_dist.set_xlabel("Gate Num")
+        ax_dist.set_ylabel("vector length")
+        ax_dist.set_title("vector length vs. Gate Num")
+        ax_dist.legend()
+        plt.grid()
+
+        if save_pic_path:
+            plt.savefig(save_pic_path + "_TomoGateError_Distance.png")
+        plt.show()
+        import pandas as pd
+        csv_data = pd.DataFrame({
+            "Gate Num": gate_num,
+            "X Data": x_data,
+            "Y Data": y_data,
+            "Z Data": z_data
+        })
+        if save_pic_path:
+            csv_data.to_csv(save_pic_path + "_TomoGateError.csv", index=False)
+
+
+
 
 
 ################################
@@ -1015,6 +1182,8 @@ class Multiplex_analyzer(QCATAna,analysis_tools):
                 self.ZgateT1_ana(**kwargs)
             case 't1':
                 self.gateError_ana(kwargs["var_name"],self.transition_freq)
+            case 't2':
+                self.TomogateError_ana(kwargs["var_name"],self.transition_freq)
             case _:
                 raise KeyError(f"Unknown measurement = {self.exp_name} was given !")
 
@@ -1052,6 +1221,8 @@ class Multiplex_analyzer(QCATAna,analysis_tools):
                 self.ZgateT1_plot(pic_save_folder)
             case 't1':
                 self.gateError_plot(pic_save_folder)
+            case 't2':
+                self.TomogateError_plot(pic_save_folder)
 
 
 
