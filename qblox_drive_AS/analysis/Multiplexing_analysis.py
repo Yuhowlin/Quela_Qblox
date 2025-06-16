@@ -1115,7 +1115,7 @@ class analysis_tools():
             plt.savefig(save_pic_path + "_TomoGateError_Distance.png")
         plt.show()
         import pandas as pd
-        csv_data = pd.DataFrame({
+        csv_data = pd.DataFrame({            
             "Gate Num": gate_num,
             "X Data": x_data,
             "Y Data": y_data,

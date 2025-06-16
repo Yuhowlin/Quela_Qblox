@@ -8,7 +8,7 @@ from qblox_drive_AS.support import QDmanager, Data_manager, compose_para_for_mul
 from qblox_drive_AS.support.Pulse_schedule_library import Tomography_Test_SS_sche, pulse_preview
 from qblox_drive_AS.support.WaveformCtrl import GateGenesis
 
-def Tomography_GateError_single_shot(QD_agent: QDmanager, ro_elements: list, max_gate_num: int, shots: int = 1000, 
+def Tomography_GateError_single_shot(QD_agent: QDmanager, ro_elements: list, max_gate_num: int, shots: int = 1000, initial: str = "0", 
                                      untrained: bool = False, run: bool = True):
     sche_func = Tomography_Test_SS_sche
     sample_pts = max_gate_num  # fix
@@ -52,6 +52,7 @@ def Tomography_GateError_single_shot(QD_agent: QDmanager, ro_elements: list, max
             R_integration=compose_para_for_multiplexing(QD_agent, ro_elements, 'r4'),
             R_inte_delay=compose_para_for_multiplexing(QD_agent, ro_elements, 'r2'),
             basis=basis,  # 控制測量方向
+            initial=initial
         )
 
         if run:
@@ -83,5 +84,5 @@ def Tomography_GateError_single_shot(QD_agent: QDmanager, ro_elements: list, max
     SS_ds.attrs["end_time"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
     SS_ds.attrs["execution_time"] = Data_manager().get_time_now()
     SS_ds.attrs["bases"] = ",".join(bases)   # 記錄測量基底
-
+    
     return SS_ds

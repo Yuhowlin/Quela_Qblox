@@ -182,14 +182,14 @@ class QD_modifier():
                 file.write(f"Comments: {self.QD_agent.Log if self.QD_agent.Log != '' else '---'}\n\n")
                 file.write(f"RO-atte = {self.QD_agent.Notewriter.get_DigiAtteFor(qs[0],'ro')} dB\n")
                 file.write(f"XY-atte = {self.QD_agent.Notewriter.get_DigiAtteFor(qs[0],'xy')} dB\n")
-                file.write(f"Reset time = {round(self.QD_agent.quantum_device.get_element(qs[0]).reset.duration()*1e6)} µs\n\n")
+                # file.write(f"Reset time = {round(self.QD_agent.quantum_device.get_element(qs[0]).reset.duration()*1e6)} µs\n\n")
 
                 for q in qs:
                     file.write(f'[{q}]\n')  
                     qubit = self.QD_agent.quantum_device.get_element(q)
                     file.write(f"    bare   = {self.QD_agent.Notewriter.get_bareFreqFor(q)*1e-9} GHz\n")
                     file.write(f"    ROF    = {qubit.clock_freqs.readout()*1e-9} GHz\n")
-                    file.write(f"    ROT    = {round(self.QD_agent.quantum_device.get_element(q).measure.integration_time()*1e6,2)} µs\n")
+                    # file.write(f"    ROT    = {round(self.QD_agent.quantum_device.get_element(q).measure.integration_time()*1e6,2)} µs\n")
                     file.write(f"    XYF    = {qubit.clock_freqs.f01()*1e-9} GHz\n")
                     file.write(f"    Pi-amp = {qubit.rxy.amp180()} V\n")
                     file.write(f"    Pi-dura= {round(qubit.rxy.duration()*1e9,0)} ns\n")
@@ -199,7 +199,7 @@ class QD_modifier():
 
 if __name__ == "__main__":
 
-    QD_path = "qblox_drive_AS/QD_backup/20250122/DR1#11_SumInfo.pkl"
+    QD_path = r"C:\Users\ASUS\Documents\GitHub\Quela_Qblox\qblox_drive_AS\QD_backup\20250402\DR3#13_SumInfo.pkl"
     QMaster = QD_modifier(QD_path)
 
     ### Readout
@@ -207,14 +207,14 @@ if __name__ == "__main__":
     QMaster.reset_rotation_angle(target_qs=[])    # target_qs = ['q0', 'q1', ...]
 
     """ Set RO amp by a coef. """
-    QMaster.set_ROamp_by_coef(roAmp_coef_dict={}) # roAmp_coef_dict = {"q0":0.93, "q1":0.96, ...}, set None or {} to bypass 
+    QMaster.set_ROamp_by_coef(roAmp_coef_dict={"q0":0.5,"q1":0.1,"q2":0.5,"q3":0.5,"q4":0.5,}) # roAmp_coef_dict = {"q0":0.93, "q1":0.96, ...}, set None or {} to bypass 
 
     """ Set RO freq """
     QMaster.set_ROF(ROFs={})                      # ROFs = {"q0":6.0554e9, .....}
 
     """ Set RO-LO, RO-atte ( target_q QRM-RF modlue global) """
-    QMaster.set_roLOfreq(LO_Hz=None, target_q='q0') # LO is global in the same QRM-RF module, set None to bypass 
-    QMaster.set_roAtte(ro_atte=None, target_q='q0') # RO-attenuation is global in the same QRM-RF module, set None to bypass 
+    QMaster.set_roLOfreq(LO_Hz=6e9, target_q='q0') # LO is global in the same QRM-RF module, set None to bypass 
+    QMaster.set_roAtte(ro_atte=34, target_q='q0') # RO-attenuation is global in the same QRM-RF module, set None to bypass 
     
     """ Set Integration time """ 
     QMaster.set_integration_time(inte_time_s={}) # inte_time_s = {"q0":1e-6, "q1":0.75e-6, ...}, set None or {} to bypass 

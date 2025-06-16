@@ -1,47 +1,50 @@
-QD_file: qblox_drive_AS/QD_backup/20250122/DR1#11_SumInfo.pkl
+QD_file: C:\Users\ASUS\Documents\GitHub\Quela_Qblox\qblox_drive_AS\QD_backup\20250402\DR3#13_SumInfo.pkl
 Comments: ---
 
-RO-atte = 26 dB
+RO-atte = 34 dB
 XY-atte = 0 dB
-Reset time = 600 µs
-
 [q0]
-    bare   = 4.508897929076325 GHz
-    ROF    = 4.508976642691805 GHz
-    ROT    = 8.0 µs
-    XYF    = 2.6048282857747043 GHz
-    Pi-amp = 0.732139731799475 V
-    Pi-dura= 200.0 ns
-    x      = 0.0787136154794693 MHz
-    g      = 18.499024766413836 MHz
+    bare   = 5.919459321688165 GHz
+    ROF    = 5.922977334896469 GHz
+    XYF    = 3.3355220414817257 GHz
+    Pi-amp = 0.05 V
+    Pi-dura= 40.0 ns
+    x      = 3.518013208304405 MHz
+    g      = 92.75905438117196 MHz
 
 [q1]
-    bare   = 4.604740611931549 GHz
-    ROF    = 4.605404986066962 GHz
-    ROT    = 4.0 µs
-    XYF    = 3.491817888393119 GHz
-    Pi-amp = 0.33855876255267886 V
-    Pi-dura= 200.0 ns
-    x      = 0.6643741354141235 MHz
-    g      = 28.212533399605253 MHz
+    bare   = 5.9731830111119475 GHz
+    ROF    = 5.922889953767321 GHz
+    XYF    = 5.710739563796869 GHz
+    Pi-amp = 0.05 V
+    Pi-dura= 40.0 ns
+    x      = -50.293057344626426 MHz
+    g      = 37.62554863685835 MHz
 
 [q2]
-    bare   = 4.698012769030793 GHz
-    ROF    = 4.698527897634897 GHz
-    ROT    = 4.0 µs
-    XYF    = 3.4188165302904636 GHz
-    Pi-amp = 0.18353527863089436 V
-    Pi-dura= 200.0 ns
-    x      = 0.515128604104042 MHz
-    g      = 26.9172764434143 MHz
+    bare   = 6.010150143673109 GHz
+    ROF    = 5.922762996739654 GHz
+    XYF    = 4.245520113001006 GHz
+    Pi-amp = 0.05 V
+    Pi-dura= 40.0 ns
+    x      = -87.38714693345547 MHz
+    g      = 392.6906973351049 MHz
 
 [q3]
-    bare   = 4.794240996877137 GHz
-    ROF    = 4.7948298926835315 GHz
-    ROT    = 5.0 µs
-    XYF    = 3.525529715998996 GHz
-    Pi-amp = 0.4482143305329039 V
-    Pi-dura= 200.0 ns
-    x      = 0.588895806394577 MHz
-    g      = 30.656741711800432 MHz
+    bare   = 6.082728601157358 GHz
+    ROF    = 6.085789001728543 GHz
+    XYF    = 6.203197948343749 GHz
+    Pi-amp = 0.05 V
+    Pi-dura= 40.0 ns
+    x      = 3.0604005711851117 MHz
+    g      = 19.201157749976726 MHz
+
+[q4]
+    bare   = 6.09916702071098 GHz
+    ROF    = 6.102497536894369 GHz
+    XYF    = 4.0 GHz
+    Pi-amp = 0.05 V
+    Pi-dura= 40.0 ns
+    x      = 3.33051618338871 MHz
+    g      = 0.0 MHz
 

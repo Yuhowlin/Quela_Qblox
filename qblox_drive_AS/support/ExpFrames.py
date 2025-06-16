@@ -2810,7 +2810,7 @@ class TomographyGateErrorTest(ExpGovernment):
     def RawDataPath(self, path: str):
         self.__raw_data_location = path
 
-    def SetParameters(self, target_qs: list, shots: int = 10000, MaxGate_num: int = 300, execution: bool = True, use_untrained_wf: bool = False):
+    def SetParameters(self, target_qs: list, shots: int = 10000, MaxGate_num: int = 300, execution: bool = True, use_untrained_wf: bool = False, initial: str = "0"):
         """ 
         ### Args:
         * target_qs: list, like ["q0", "q1", ...]
@@ -2821,6 +2821,7 @@ class TomographyGateErrorTest(ExpGovernment):
         self.execution = execution
         self.use_de4t_wf = use_untrained_wf
         self.target_qs = target_qs
+        self.initial = initial
 
     def PrepareHardware(self):
         self.QD_agent, self.cluster, self.meas_ctrl, self.ic, self.Fctrl = init_meas(QuantumDevice_path=self.QD_path)
@@ -2837,7 +2838,7 @@ class TomographyGateErrorTest(ExpGovernment):
     def RunMeasurement(self):
         from qblox_drive_AS.aux_measurement.TomoGateErrorTest import Tomography_GateError_single_shot
         
-        dataset = Tomography_GateError_single_shot(self.QD_agent, self.target_qs, self.Max_Gate_num, self.avg_n, self.use_de4t_wf, self.execution)
+        dataset = Tomography_GateError_single_shot(self.QD_agent, self.target_qs, self.Max_Gate_num, self.avg_n, self.initial, self.use_de4t_wf, self.execution)
         if self.execution:
             if self.save_dir is not None:
                 self.save_path = os.path.join(self.save_dir, f"TomographyGateErrorTest_{datetime.now().strftime('%Y%m%d%H%M%S') if (self.JOBID is None or self.use_time_label) else self.JOBID}")
@@ -2850,7 +2851,8 @@ class TomographyGateErrorTest(ExpGovernment):
         shut_down(self.cluster, self.Fctrl)
     
 
-    def RunAnalysis(self, new_QD_path: str = None, new_file_path: str = None):
+    def RunAnalysis(self, new_QD_path: str = None, new_file_path: str = None, ):
+        
         if self.execution:
             if new_QD_path is None:
                 QD_file = self.QD_path

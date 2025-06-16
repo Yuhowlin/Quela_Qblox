@@ -5,8 +5,8 @@ from qblox_drive_AS.support.ExpFrames import PowerRabiOsci
 
 ''' fill in '''
 Execution:bool = True
-DRandIP = {"dr":"dr2","last_ip":"10"}
-pi_amp_range:dict = {"q0":[-0.6,0.6], "q1":[-0.5,0.5]}    # [pi_amp_start, pi_amp_end]
+DRandIP = {"dr":"dr3","last_ip":"13"}
+pi_amp_range:dict = {"q1":[-0.01,0.01],}    # [pi_amp_start, pi_amp_end]
 pi_amp_sampling_func:str = 'linspace'                          # 'linspace'/ 'logspace'/ 'arange
 
 

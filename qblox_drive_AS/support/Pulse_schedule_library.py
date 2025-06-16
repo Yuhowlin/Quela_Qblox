@@ -377,6 +377,11 @@ def Y_pi_2_p(sche,pi_amp,q,pi_Du:float,ref_pulse_sche,freeDu):
     delay_c= -pi_Du-freeDu
     return XY_waveform_controller(sche,amp,pi_Du,90,q,delay_c,ref_pulse_sche,XY_waveform,ref_pt='start')
 
+def _Y_pi_2_p(sche,pi_amp,q,pi_Du:float,ref_pulse_sche,freeDu):
+    amp= -pi_amp[q]*half_pi_ratio
+    delay_c= -pi_Du-freeDu
+    return XY_waveform_controller(sche,amp,pi_Du,90,q,delay_c,ref_pulse_sche,XY_waveform,ref_pt='start')
+
 def X_pi_p(sche,pi_amp,q,pi_Du:float,ref_pulse_sche,freeDu, ref_point:str="start"):
     amp= pi_amp[q]
     delay_c= -pi_Du-freeDu
@@ -1493,6 +1498,7 @@ def Tomography_Test_SS_sche(
     R_integration: dict,
     R_inte_delay: dict,
     basis: str = "z",  # 新增參數，決定測量方向 (x, y, z)
+    initial: str = "0",
     repetitions: int = 1,
     pi_Du:float=40e-9,
 ) -> Schedule:
@@ -1508,12 +1514,18 @@ def Tomography_Test_SS_sche(
             Multi_Readout(sched, q, spec_pulse, R_amp, R_duration, powerDep=False)
 
         if basis.lower() == "x":
-            Y_pi_2_p(sched,pi_amp,q,pi_dura[q],spec_pulse,freeDu=electrical_delay+pulse_num*pi_dura[q]+pi_dura[q])
-        elif basis.lower() == "y":
-            X_pi_2_p(sched,pi_amp,q,pi_dura[q],spec_pulse,freeDu=electrical_delay+pulse_num*pi_dura[q]+pi_dura[q])
+            Y_pi_2_p(sched,pi_amp,q,pi_dura[q],spec_pulse,freeDu=electrical_delay)
 
+        elif basis.lower() == "y":
+            X_pi_2_p(sched,pi_amp,q,pi_dura[q],spec_pulse,freeDu=electrical_delay)
+            
         for i in range(pulse_num):
-            pi_pulse = waveformer.X_pi_p(sched, pi_amp, q, pi_dura[q], spec_pulse if i == 0 else pi_pulse, freeDu=electrical_delay if i == 0 else 0)
+            pi_pulse = waveformer.X_pi_p(sched, pi_amp, q, pi_dura[q], spec_pulse if i == 0 else pi_pulse, freeDu=electrical_delay + pi_dura[q] if i == 0 else 0)
+        
+        if initial.lower() == "+i" and pulse_num>=2:
+            X_pi_2_p(sched,pi_amp,q,pi_dura[q],spec_pulse,freeDu = electrical_delay + pulse_num*pi_dura[q] + pi_dura[q])
+        if initial.lower() == "+" and pulse_num>=2:
+            Y_pi_2_p(sched,pi_amp,q,pi_dura[q],spec_pulse,freeDu = electrical_delay + pulse_num*pi_dura[q] + pi_dura[q])
 
         
         Integration(sched, q, R_inte_delay[q], R_integration, spec_pulse, acq_index=0, acq_channel=qubit_idx, single_shot=True, get_trace=False, trace_recordlength=0)
