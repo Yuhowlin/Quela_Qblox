@@ -6,19 +6,28 @@ from qblox_drive_AS.support.QDmanager import QDmanager, hcfg_composer
 # 3. Flux bias port: ":fl", like 'q12:fl', 'q999:fl', ...
 
 
-cluster_IP:str = "192.168.1.11"
-dr_name:str = "dr1"
-qubit_number_onChip:int = 4
+cluster_IP:str = "192.168.1.81"
+dr_name:str = "dr4"
+qubit_number_onChip:int = 5
 coupler_number_onChip:int = 0
-chip_name:str = "Test_8SQ"
+chip_name:str = "2FQ1FC-L#17"
 chip_type:str = "5Q4C"
 
 
 Hcfg = [
-    {"name":"q1:mw", "slot":4, "port":0},
-    {"name":"q3:mw", "slot":4, "port":1},
-    {"name":"q1:res", "slot":6, "port":0},
-    {"name":"q2:res", "slot":6, "port":0},
+    {"name":"q0:mw", "slot":12, "port":0},
+    {"name":"q1:mw", "slot":12, "port":1},
+    {"name":"q2:mw", "slot":14, "port":0},
+    {"name":"q3:mw", "slot":14, "port":1},
+    {"name":"q4:mw", "slot":16, "port":0},
+    {"name":"q1:res", "slot":18, "port":0},
+    {"name":"q3:res", "slot":18, "port":0},
+    {"name":"q0:res", "slot":18, "port":0},
+    {"name":"q2:res", "slot":18, "port":0},
+    {"name":"q4:res", "slot":18, "port":0},
+    {"name":"q0:fl", "slot":2, "port":0},
+    {"name":"q1:fl", "slot":2, "port":1},
+    {"name":"q4:fl", "slot":2, "port":2},
 ]
 
 
