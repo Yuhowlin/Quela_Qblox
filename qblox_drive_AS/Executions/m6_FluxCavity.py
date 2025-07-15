@@ -5,15 +5,14 @@ from qblox_drive_AS.support.ExpFrames import FluxCavity
 
 ''' fill in '''
 Execution:bool = True
-DRandIP = {"dr":"dr3","last_ip":"13"}
+DRandIP = {"dr":"dr4","last_ip":"81"}
 freq_span_range:dict = {
-                        # "q2":[-5e6,5e6], 
-                        "q1":[-5e6,5e6],
-                        # "q2":[-5e6,5e6], 
-                        # "q3":[-5e6,5e6],
-                        # "q4":[-5e6,5e6], 
+                        "q1":[-0.5e6,+0.5e6], 
+                        # "q1":[-0.5e6,+0.5e6],
+                        # "q2":[-0.5e6,+0.5e6], 
+                        # "q3":[-0.5e6,+0.5e6], 
                         }    # np.linspace(rof+span, rof+span, freq_pts)
-flux_range:list = [-0.2, 0.2, 10]                                 # flux [from, end, pts/step]
+flux_range:list = [-1, 1, 40]                                 # flux [from, end, pts/step]
 flux_sampling_func:str = 'linspace'                          # 'linspace'/ 'logspace'/ 'arange
 
 freq_pts:int = 40

@@ -6,13 +6,13 @@ from qblox_drive_AS.support.ExpFrames import PowerConti2tone
 ''' fill in '''
 Execution:bool = True
 RO_XY_overlap:bool = False
-DRandIP = {"dr":"dr3","last_ip":"13"}
-freq_range:dict = {"q1":[4e9,4.5e9],
+DRandIP = {"dr":"dr4","last_ip":"81"}
+freq_range:dict = {"q1":[3.0e9, 3.5e9],
                 #    "q1":[0],
                 #    "q2":[0],
                 #    "q3":[0],
                 }    # [freq_start, freq_end] use linspace, or [0] system calculate fq for you.
-xyl_range:list = [0.1]                                 # driving power [from, end, pts/step]
+xyl_range:list = [0.02,0.1,5]                                 # driving power [from, end, pts/step]
 xyl_sampling_func:str = 'linspace'                          # 'linspace'/ 'logspace'/ 'arange
 
 freq_pts:int = 100

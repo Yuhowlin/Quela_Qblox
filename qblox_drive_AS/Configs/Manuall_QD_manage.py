@@ -199,7 +199,7 @@ class QD_modifier():
 
 if __name__ == "__main__":
 
-    QD_path = r"C:\Users\ASUS\Documents\GitHub\Quela_Qblox\qblox_drive_AS\QD_backup\20250402\DR3#13_SumInfo.pkl"
+    QD_path = r"C:\Users\ASUS\Documents\GitHub\Quela_Qblox\qblox_drive_AS\QD_backup\20250715\DR4#81_SumInfo.pkl"
     QMaster = QD_modifier(QD_path)
 
     ### Readout
@@ -207,20 +207,20 @@ if __name__ == "__main__":
     QMaster.reset_rotation_angle(target_qs=[])    # target_qs = ['q0', 'q1', ...]
 
     """ Set RO amp by a coef. """
-    QMaster.set_ROamp_by_coef(roAmp_coef_dict={"q0":0.5,"q1":0.1,"q2":0.5,"q3":0.5,"q4":0.5,}) # roAmp_coef_dict = {"q0":0.93, "q1":0.96, ...}, set None or {} to bypass 
+    QMaster.set_ROamp_by_coef(roAmp_coef_dict={"q0":1,"q3":1,"q1":2}) # roAmp_coef_dict = {"q0":0.93, "q1":0.96, ...}, set None or {} to bypass 
 
     """ Set RO freq """
     QMaster.set_ROF(ROFs={})                      # ROFs = {"q0":6.0554e9, .....}
 
     """ Set RO-LO, RO-atte ( target_q QRM-RF modlue global) """
-    QMaster.set_roLOfreq(LO_Hz=6e9, target_q='q0') # LO is global in the same QRM-RF module, set None to bypass 
-    QMaster.set_roAtte(ro_atte=34, target_q='q0') # RO-attenuation is global in the same QRM-RF module, set None to bypass 
+    QMaster.set_roLOfreq(LO_Hz=4.9e9, target_q='q0') # LO is global in the same QRM-RF module, set None to bypass 
+    QMaster.set_roAtte(ro_atte=24, target_q='q0') # RO-attenuation is global in the same QRM-RF module, set None to bypass 
     
     """ Set Integration time """ 
-    QMaster.set_integration_time(inte_time_s={}) # inte_time_s = {"q0":1e-6, "q1":0.75e-6, ...}, set None or {} to bypass 
+    QMaster.set_integration_time(inte_time_s={"q2":10e-6,"q1":10e-6,"q0":20e-6,"q3":10e-6}) # inte_time_s = {"q0":1e-6, "q1":0.75e-6, ...}, set None or {} to bypass 
 
     """ Set reset time (All qubits global) """
-    QMaster.setGlobally_reset_time(reset_time_s=None)      # reset_time_s = 250e-6, all the qubit in the quantum_device will share the same value
+    QMaster.setGlobally_reset_time(reset_time_s=1e-3)      # reset_time_s = 250e-6, all the qubit in the quantum_device will share the same value
 
     ### Driving 
     """ Set XY Frequency """
@@ -230,7 +230,7 @@ if __name__ == "__main__":
     QMaster.set_XY_amp(pi_amps = {})                      # pi_amps = {"q0":0.2, "q1":0.15, ...}
 
     """ Set pi pulse duration """
-    QMaster.set_XY_duration(pi_duras = {})                # pi_duras = {"q0":40e-9, "q1":48e-9, ...}
+    QMaster.set_XY_duration(pi_duras = {"q2":200e-9,"q1":100e-9,"q0":100e-9,"q3":100e-9,})                # pi_duras = {"q0":40e-9, "q1":48e-9, ...}
 
     """ Set driving attenuation (All qubits blobal) """     # xy_atte = 10 recommended, all qubits are shared with a same value. Must be multiples of 2.
     QMaster.setGlobally_driving_atte(xy_atte=None)

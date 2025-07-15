@@ -6,12 +6,12 @@ from qblox_drive_AS.support.ExpFrames import SpinEcho
 
 ''' fill in '''
 Execution:bool = True
-DRandIP = {"dr":"dr2","last_ip":"10"}
-time_range:dict = {"q0":[0,50e-6],"q1":[0,30e-6]}
+DRandIP = {"dr":"dr4","last_ip":"81"}
+time_range:dict = {"q0":[0,500e-6]}
 time_sampling_func:str = "linspace"
 time_ptsORstep:int|float = 100
 AVG:int = 500
-histo_counts:int = 3
+histo_counts:int = 10
 
 ''' Don't Touch '''
 save_dir = Data_manager().build_packs_folder()

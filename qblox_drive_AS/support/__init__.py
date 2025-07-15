@@ -1,6 +1,6 @@
 import pickle, os
 from typing import Callable
-from qblox_drive_AS.Configs.ClusterAddress_rec import ip_register, port_register
+from qblox_drive_AS.Configs.ClusterAddress_rec import ip_register, port_register, FQDN_2F
 from qcodes.instrument import find_or_create_instrument
 from typing import Tuple
 import ipywidgets as widgets
@@ -62,14 +62,14 @@ def init_meas(QuantumDevice_path:str)->Tuple[QDmanager, Cluster, MeasurementCont
     if cluster_ip in list(port_register.keys()):
         # try maximum 3 connections to prevent connect timeout error 
         try:
-            cluster = Cluster(name = f"cluster{dr_loc.lower()}",identifier = f"qum.phys.sinica.edu.tw", port=int(port_register[cluster_ip]))
+            cluster = Cluster(name = f"cluster{dr_loc.lower()}",identifier = FQDN_2F, port=int(port_register[cluster_ip]))
         except:
             try:
                 warning_print("First cluster connection trying")
-                cluster = Cluster(name = f"cluster{dr_loc.lower()}",identifier = f"qum.phys.sinica.edu.tw", port=int(port_register[cluster_ip]))
+                cluster = Cluster(name = f"cluster{dr_loc.lower()}",identifier = FQDN_2F, port=int(port_register[cluster_ip]))
             except:
                 warning_print("Second cluster connection trying")
-                cluster = Cluster(name = f"cluster{dr_loc.lower()}",identifier = f"qum.phys.sinica.edu.tw", port=int(port_register[cluster_ip]))          
+                cluster = Cluster(name = f"cluster{dr_loc.lower()}",identifier = FQDN_2F, port=int(port_register[cluster_ip]))          
     else:
         try:
             warning_print("cluster IP connection trying")

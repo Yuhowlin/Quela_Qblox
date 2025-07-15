@@ -6,7 +6,7 @@ from qblox_drive_AS.support.ExpFrames import XYFcali
 
 ''' fill in '''
 Execution:bool = True
-DRandIP = {"dr":"dr3","last_ip":"13"}
+DRandIP = {"dr":"dr4","last_ip":"81"}
 target_qs:list = ["q2"]
 AVG:int = 500
 

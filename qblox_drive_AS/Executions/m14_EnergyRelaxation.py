@@ -6,12 +6,12 @@ from qblox_drive_AS.support.ExpFrames import EnergyRelaxation
 
 ''' fill in '''
 Execution:bool = True
-DRandIP = {"dr":"dr3","last_ip":"13"}
-time_range:dict = {"q2":[0,80e-6]}
+DRandIP = {"dr":"dr4","last_ip":"81"}
+time_range:dict = {"q0":[0,500e-6]}
 time_sampling_func:str = "linspace"
 time_ptsORstep:int|float = 100
 AVG:int = 500
-histo_counts:int = 1
+histo_counts:int = 10
 use_OnsShot:bool = False
 
 ''' Don't Touch '''

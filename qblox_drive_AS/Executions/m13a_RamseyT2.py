@@ -6,12 +6,12 @@ from qblox_drive_AS.support.ExpFrames import Ramsey
 
 ''' fill in '''
 Execution:bool = 1
-DRandIP = {"dr":"dr3","last_ip":"13"}
-time_range:dict = {"q2":[0,50e-6],}
+DRandIP = {"dr":"dr4","last_ip":"81"}
+time_range:dict = {"q0":[0,50e-6],}
 time_sampling_func:str = "linspace"
 time_ptsORstep:int|float = 100
 AVG:int = 500
-histo_counts:int = 1
+histo_counts:int = 10
 
 ''' Don't Touch '''
 save_dir = Data_manager().build_packs_folder()

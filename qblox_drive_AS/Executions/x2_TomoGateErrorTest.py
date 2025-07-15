@@ -5,10 +5,10 @@ from qblox_drive_AS.support.ExpFrames import TomographyGateErrorTest
 
 ''' fill in '''
 Execution: bool = 1
-DRandIP = {"dr": "dr3", "last_ip": "13"}
-target_qs: list = ["q2"]
+DRandIP = {"dr": "dr4", "last_ip": "81"}
+target_qs: list = ["q0"]
 un_trained_pulse: bool = True
-max_gate_num = 100
+max_gate_num = 500
 shots: int = 1000
 initial: str = "0" 
 ''' Don't Touch '''
