@@ -3234,6 +3234,111 @@ class XGateErrorTest(ExpGovernment):
 
         self.CloseMeasurement() 
 
+
+class XTomography(ExpGovernment):
+    def __init__(self, QD_path:str, data_folder:str=None, JOBID:str=None):
+        super().__init__()
+        self.QD_path = QD_path
+        self.save_dir = data_folder
+        self.JOBID = JOBID
+        self.__raw_data_location = ""
+
+    @property
+    def RawDataPath(self):
+        return self.__raw_data_location
+
+    def SetParameters(self, target_q:str = "q0", init_state:str = "zero", avg_n:int = 300, gate_counts:list= range(1, 100), execution:bool = True):
+        self.target_q = target_q
+        self.init_state = init_state
+        self.avg_n = avg_n
+        self.execution = execution
+        self.gate_counts =  gate_counts# 1~99 個 X gate
+
+    def PrepareHardware(self):
+        self.QD_agent, self.cluster, self.meas_ctrl, self.ic, self.Fctrl = init_meas(QuantumDevice_path=self.QD_path)
+
+        # Bias coupler
+        self.Fctrl = coupler_zctrl(
+            self.Fctrl,
+            self.QD_agent.Fluxmanager.build_Cctrl_instructions(
+                [cp for cp in self.Fctrl if cp[0]=='c' or cp[:2]=='qc'],
+                'i'
+            )
+        )
+
+        # Set LO & Attenuation
+        for q in self.target_q:
+            self.Fctrl[q](self.QD_agent.Fluxmanager.get_proper_zbiasFor(target_q=q))
+            IF_minus = self.QD_agent.Notewriter.get_xyIFFor(q)
+            xyf = self.QD_agent.quantum_device.get_element(q).clock_freqs.f01()
+            set_LO_frequency(self.QD_agent.quantum_device, q=q, module_type='drive', LO_frequency=xyf-IF_minus)
+            init_system_atte(
+                self.QD_agent.quantum_device, [q],
+                ro_out_att=self.QD_agent.Notewriter.get_DigiAtteFor(q, 'ro'),
+                xy_out_att=self.QD_agent.Notewriter.get_DigiAtteFor(q, 'xy')
+        )
+
+    def RunMeasurement(self):
+        from qblox_drive_AS.aux_measurement.TomoGateErrorTest import XTomographyPS
+        meas = XTomographyPS()
+        meas.target_q = self.target_q
+        meas.initial_state = self.init_state
+        meas._gate_counts = self.gate_counts
+        meas.execution = self.execution
+        meas.n_avg = self.avg_n
+        meas.meas_ctrl = self.meas_ctrl
+        meas.QD_agent = self.QD_agent
+
+        meas.run()
+        dataset = meas.dataset
+
+        if self.execution:
+            if self.save_dir is not None:
+                filename = f"XTomography_{datetime.now().strftime('%Y%m%d%H%M%S') if self.JOBID is None else self.JOBID}"
+                self.save_path = os.path.join(self.save_dir, filename)
+                self.__raw_data_location = self.save_path + ".nc"
+                dataset.to_netcdf(self.__raw_data_location)
+            else:
+                self.save_fig_path = None
+
+    def CloseMeasurement(self):
+        shut_down(self.cluster, self.Fctrl)
+    
+    def RunAnalysis(self, new_QD_path: str = None, new_file_path: str = None):
+        if self.execution:
+            if new_QD_path is None:
+                QD_file = self.QD_path
+            else:
+                QD_file = new_QD_path
+
+            if new_file_path is None:
+                file_path = self.__raw_data_location
+                fig_path = self.save_dir
+            else:
+                file_path = new_file_path
+                fig_path = os.path.split(new_file_path)[0]
+
+            QD_savior = QDmanager(QD_file)
+            QD_savior.QD_loader()
+
+            
+            ds = open_dataset(file_path)
+            for var in ds.data_vars:
+                basenumber = var[-1]
+                if basenumber == "x":
+                    ANA = Multiplex_analyzer("t2")
+                    ANA._import_data(ds,var_dimension=0,fq_Hz=QD_savior.quantum_device.get_element(var[:2]).clock_freqs.f01())
+                    ANA._start_analysis(var_name=var[:2])
+                    pic_path = os.path.join(fig_path,f"{var[:2]}_TomoGateErrorTest_{datetime.now().strftime('%Y%m%d%H%M%S') if self.JOBID is None else self.JOBID}")
+                    ANA._export_result(pic_path)                
+            ds.close()
+
+    
+    def WorkFlow(self):
+        self.PrepareHardware()
+        self.RunMeasurement()
+        self.CloseMeasurement()
+
 class ParitySwitch(ExpGovernment):
     def __init__(self,QD_path:str,data_folder:str=None,JOBID:str=None):
         super().__init__()

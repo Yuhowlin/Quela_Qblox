@@ -6,18 +6,18 @@ EXP = SQRB(data_folder=save_dir)
 
 
 # Execution, bool
-EXP.execution = 0
+EXP.execution = 1
 
 # QD_path setting, str
-EXP.QD_path = find_latest_QD_pkl_for_dr(which_dr="dr1", ip_label="11")
+EXP.QD_path = find_latest_QD_pkl_for_dr(which_dr="dr4", ip_label="81")
 
 # measurement qubit
-EXP.qs = ["q1", "q3"]
+EXP.qs = ["q1"]
 
 # maximum gate number
-EXP.max_gate_num = 100  # 300 is maximum, max usage of sequencer memory  
+EXP.max_gate_num = 10  # 300 is maximum, max usage of sequencer memory  
 # gate sampliing number
-EXP.gate_pts = 75
+EXP.gate_pts = 7
 # how many random circuits
 EXP.circuits_num = 2
 

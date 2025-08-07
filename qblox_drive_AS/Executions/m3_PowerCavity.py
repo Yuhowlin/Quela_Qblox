@@ -5,8 +5,13 @@ from qblox_drive_AS.support.ExpFrames import PowerCavity
 
 ''' fill in '''
 Execution:bool = True
-DRandIP = {"dr":"dr1","last_ip":"11"}
-freq_span_range:dict = {"q3":[-1e6,+1e6], "q1":[-1e6,+1e6], "q0":[-1e6,+1e6], "q2":[-1e6,+1e6]}    # np.linspace(rof+span, rof+span, freq_pts)
+DRandIP = {"dr":"dr2","last_ip":"10"}
+freq_span_range:dict = {"q0":[-1e6,+1e6],
+                        "q1":[-1e6,+1e6],
+                        "q2":[-1e6,+1e6],
+                        "q3":[-1e6,+1e6],
+                        
+                        }    # np.linspace(rof+span, rof+span, freq_pts)
 RO_atteuations:list = [0, 60, 2]                               # atte [from, end, step] , end MUST be less than 60, end step MUST be even.  
 
 freq_pts:int = 50

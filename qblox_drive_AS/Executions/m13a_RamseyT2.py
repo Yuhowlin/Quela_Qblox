@@ -5,12 +5,12 @@ from qblox_drive_AS.support.ExpFrames import Ramsey
 
 ''' fill in '''
 Execution:bool = 1
-DRandIP = {"dr":"dr1","last_ip":"11"}
-max_evo_time:float = 100e-6
-target_qs:list = ["q3", "q1"]
+DRandIP = {"dr":"dr2","last_ip":"10"}
+max_evo_time:float = 30e-6
+target_qs:list = ["q0"]
 time_sampling_func:str = "linspace"
 time_ptsORstep:int|float = 100
-AVG:int = 1000
+AVG:int = 100
 histo_counts:int = 1
 
 #?? Notes: While you're using one-shot method, time samples (time_pts) * shots (AVG) must less than or equal to 131000. 

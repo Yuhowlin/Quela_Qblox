@@ -5,9 +5,9 @@ from qblox_drive_AS.support.ExpFrames import EnergyRelaxation
 
 ''' fill in '''
 Execution:bool = 1
-DRandIP = {"dr":"dr1","last_ip":"11"}
-max_evo_time:float = 1000e-6
-target_qs:list = ["q1","q3"]
+DRandIP = {"dr":"dr2","last_ip":"10"}
+max_evo_time:float = 500e-6
+target_qs:list = ["q0"]
 time_sampling_func:str = "linspace"
 time_ptsORstep:int|float = 100
 AVG:int = 400

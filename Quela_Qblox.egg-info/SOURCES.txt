@@ -15,7 +15,6 @@ qblox_drive_AS/support/Path_Book.py
 qblox_drive_AS/support/Pulse_schedule_library.py
 qblox_drive_AS/support/Pulser.py
 qblox_drive_AS/support/QDmanager.py
-qblox_drive_AS/support/QDmanager_oldVer_toDelete.py
 qblox_drive_AS/support/QuFluxFit.py
 qblox_drive_AS/support/Readout_optimization.py
 qblox_drive_AS/support/StatifyContainer.py

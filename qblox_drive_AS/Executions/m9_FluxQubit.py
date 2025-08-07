@@ -6,9 +6,9 @@ from qblox_drive_AS.support.ExpFrames import FluxQubit
 ''' fill in '''
 Execution:bool = True
 DRandIP = {"dr":"dr4","last_ip":"81"}
-freq_span_range:dict = {"q1":[-400e6,100e6]}    # [freq_span_start, freq_span_end] use linspace, total span should <= 500 MHz
-bias_elements:list = ['c0']
-z_amp_range:list = [-0.3, 0.3, 30]                                 # z-pulse amplitude [from, end, pts/step]
+freq_span_range:dict = {"q1":[-450e6,50e6]}    # [freq_span_start, freq_span_end] use linspace, total span should <= 500 MHz
+bias_elements:list = ["q1"]
+z_amp_range:list = [-1.6, 0.1, 30]                                 # z-pulse amplitude [from, end, pts/step]
 z_amp_sampling_func:str = 'linspace'                          # 'linspace'/ 'logspace'/ 'arange
 
 freq_pts:int = 20

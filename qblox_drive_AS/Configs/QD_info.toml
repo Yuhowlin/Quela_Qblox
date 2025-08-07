@@ -1,65 +1,65 @@
-QD_file: qblox_drive_AS/QD_backup/20250508/DR1#11_SumInfo.pkl
-Chip name: Test_8SQ
+QD_file: C:\Users\ASUS\Documents\GitHub\Quela_Qblox\qblox_drive_AS\QD_backup\20250806\DR2#10_SumInfo.pkl
+Chip name: FQV1_WJV_Al#11
 Comments: ---
 
-RO-atte = 32 dB
+RO-atte = 50 dB
 XY-atte = 0 dB
-TOF = 232 ns
+TOF = 280 ns
 Active Reset OFF, Reset time = 1000 us
 
 [q0]
-    bare    = 0.0 GHz
-    ROF     = 6.0 GHz
-    RO-amp  = 0.5 V
-    ROT     = 1.0 us
-    f01     = 4.0 GHz
-    GE-amp  = 0.05 V
-    GE-dura = 40.0 ns
+    bare    = 4.812696144309497 GHz
+    ROF     = 4.812944742889734 GHz
+    RO-amp  = 0.073 V
+    ROT     = 10.0 us
+    f01     = 2.7318614683012745 GHz
+    GE-amp  = 0.5055040417960905 V
+    GE-dura = 100.0 ns
     EF-dura = 40.0 ns
     Motzoi  = 0
-    x       = 6000.0 MHz
-    g       = 0.0 MHz
+    x       = 0.2485985802373886 MHz
+    g       = 22.744066174789612 MHz
     Ec      = 0.0 MHz
 
 [q1]
-    bare    = 4.912285740134493 GHz
-    ROF     = 4.912544786800924 GHz
-    RO-amp  = 0.05 V
-    ROT     = 15.0 us
-    f01     = 3.0850000000000004 GHz
-    GE-amp  = 0.3310315065647449 V
-    GE-dura = 300.0 ns
+    bare    = 4.913555505186263 GHz
+    ROF     = 4.913873300503737 GHz
+    RO-amp  = 0.225 V
+    ROT     = 4.0 us
+    f01     = 4.0 GHz
+    GE-amp  = 0.05 V
+    GE-dura = 100.0 ns
     EF-dura = 40.0 ns
     Motzoi  = 0
-    x       = 0.259046666431427 MHz
+    x       = 0.31779531747341155 MHz
     g       = 0.0 MHz
     Ec      = 0.0 MHz
 
 [q2]
-    bare    = 0.0 GHz
-    ROF     = 6.0 GHz
-    RO-amp  = 0.5 V
-    ROT     = 1.0 us
+    bare    = 5.013639831964223 GHz
+    ROF     = 5.013827474369856 GHz
+    RO-amp  = 0.225 V
+    ROT     = 4.0 us
     f01     = 4.0 GHz
     GE-amp  = 0.05 V
-    GE-dura = 40.0 ns
+    GE-dura = 100.0 ns
     EF-dura = 40.0 ns
     Motzoi  = 0
-    x       = 6000.0 MHz
+    x       = 0.18764240563297271 MHz
     g       = 0.0 MHz
     Ec      = 0.0 MHz
 
 [q3]
-    bare    = 5.113070735601589 GHz
-    ROF     = 5.113501679029422 GHz
-    RO-amp  = 0.05 V
-    ROT     = 15.0 us
-    f01     = 3.3790340697999537 GHz
-    GE-amp  = 0.4166805407529241 V
-    GE-dura = 300.0 ns
+    bare    = 5.113452272499001 GHz
+    ROF     = 5.113712865280391 GHz
+    RO-amp  = 0.225 V
+    ROT     = 4.0 us
+    f01     = 4.0 GHz
+    GE-amp  = 0.05 V
+    GE-dura = 100.0 ns
     EF-dura = 40.0 ns
     Motzoi  = 0
-    x       = 0.4309434278335571 MHz
+    x       = 0.2605927813901901 MHz
     g       = 0.0 MHz
     Ec      = 0.0 MHz
 

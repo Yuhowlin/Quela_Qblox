@@ -752,6 +752,49 @@ def Gate_Test_SS_sche(
 
     return sched
 
+def Tomography_Test_SS_sche(
+    pulse_num: int,
+    waveformer: GateGenesis,
+    pi_amp: dict,
+    pi_dura: dict,
+    R_amp: dict,
+    R_duration: dict,
+    R_integration: dict,
+    R_inte_delay: dict,
+    basis: str = "z",  # 新增參數，決定測量方向 (x, y, z)
+    initial: str = "0",
+    repetitions: int = 1,
+    pi_Du:float=40e-9,
+) -> Schedule:
+    
+
+    sched = Schedule("Single Shot", repetitions=repetitions)
+    
+    for qubit_idx, q in enumerate(R_integration):
+        sched.add(Reset(q))
+        if qubit_idx == 0:
+            spec_pulse = Readout(sched, q, R_amp, R_duration, powerDep=False)
+        else:
+            Multi_Readout(sched, q, spec_pulse, R_amp, R_duration, powerDep=False)
+
+        if basis.lower() == "x":
+            Y_pi_2_p(sched,pi_amp,q,pi_dura[q],spec_pulse,freeDu=electrical_delay)
+
+        elif basis.lower() == "y":
+            X_pi_2_p(sched,pi_amp,q,pi_dura[q],spec_pulse,freeDu=electrical_delay)
+            
+        for i in range(pulse_num):
+            pi_pulse = waveformer.X_pi_p(sched, pi_amp, q, pi_dura[q], spec_pulse if i == 0 else pi_pulse, freeDu=electrical_delay + pi_dura[q] if i == 0 else 0)
+        
+        if initial.lower() == "+i" and pulse_num>=2:
+            X_pi_2_p(sched,pi_amp,q,pi_dura[q],spec_pulse,freeDu = electrical_delay + pulse_num*pi_dura[q] + pi_dura[q])
+        if initial.lower() == "+" and pulse_num>=2:
+            Y_pi_2_p(sched,pi_amp,q,pi_dura[q],spec_pulse,freeDu = electrical_delay + pulse_num*pi_dura[q] + pi_dura[q])
+
+        
+        Integration(sched, q, R_inte_delay[q], R_integration, spec_pulse, acq_index=0, acq_channel=qubit_idx, single_shot=True, get_trace=False, trace_recordlength=0)
+    
+    return sched
 
 def Qubit_amp_SS_sche(
     q:str,

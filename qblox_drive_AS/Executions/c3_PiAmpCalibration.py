@@ -6,10 +6,10 @@ from qblox_drive_AS.support.ExpFrames import PiAcali
 
 ''' fill in '''
 Execution:bool = True
-DRandIP = {"dr":"dr1","last_ip":"11"}
-pi_power_coef_range:dict = {"q3":[0.9,1.1]}
+DRandIP = {"dr":"dr2","last_ip":"10"}
+pi_power_coef_range:dict = {"q0":[0.6,1.4]}
 coef_sampling_func:str = 'linspace'
-pi_pair_num:list = [5,5]
+pi_pair_num:list = [2]
 coef_ptsORstep:int|float = 100
 AVG:int = 500
 

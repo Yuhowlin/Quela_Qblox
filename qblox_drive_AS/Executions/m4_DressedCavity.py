@@ -7,9 +7,13 @@ from qblox_drive_AS.support.ExpFrames import Dressed_CavitySearching
 
 ''' fill in '''
 Execution:bool = True
-DRandIP = {"dr":"dr1","last_ip":"11"}
-freq_range:dict = {"q1":[4.9e9, 4.92e9],
-                   "q3":[5.1e9, 5.12e9],}    # np.linspace(rof+span, rof+span, freq_pts)
+DRandIP = {"dr":"dr2","last_ip":"10"}
+freq_range:dict = {
+                    "q0":[4.81e9, 4.815e9],
+                    "q1":[4.91e9, 4.917e9],
+                    "q2":[5.01e9, 5.018e9],
+                    "q3":[5.11e9, 5.117e9],
+                      }    # np.linspace(rof+span, rof+span, freq_pts)
 
 freq_pts:int = 100
 AVG:int = 1000
