@@ -18,7 +18,7 @@ class XTomographyPS(ScheduleConductor):
         super().__init__()
         self._target_q: list = ["q0"]
         self._init_state: str = "zero"  # options: "zero", "plus", "plus_i"
-        self._gate_counts:list = arange(1, 100)  # 1~99 X gates
+        self._gate_counts:list = arange(0, 100)  # 1~99 X gates
         self._avg_n:int = 100
 
     @property
@@ -116,9 +116,9 @@ class XTomographyPS(ScheduleConductor):
             gate_grid, basis_grid, shot_grid = np.meshgrid(gate_counts, basis_labels, arange(shots), indexing="ij")
 
             self.meas_ctrl.setpoints_grid((
-                gate_grid.flatten(),
-                basis_grid.flatten(),
                 shot_grid.flatten(),
+                basis_grid.flatten(),
+                gate_grid.flatten(),
             ))
 
 
@@ -139,9 +139,10 @@ class XTomographyPS(ScheduleConductor):
             q_data = array(rs_ds["y1"]).reshape(gate_len, 3, shots)
 
             # ✅ 設定座標
-            ds.coords["mixer"] = ["I", "Q"]
-            ds.coords["pulse_num"] = self._gate_counts
+            
             ds.coords["index"] = arange(i_data.shape[-1])
+            ds.coords["pulse_num"] = self._gate_counts
+            ds.coords["mixer"] = ["I", "Q"]
 
             # ✅ 建立 q0_x, q0_y, q0_z
             basis_labels = ["x", "y", "z"]

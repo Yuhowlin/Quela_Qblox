@@ -303,7 +303,7 @@ class analysis_tools():
             sweet_flux = float(sweet_spot.x[0])
             sweet_freq = -sweet_spot.fun
 
-            self.fit_packs = {"A":paras[0],"f":paras[1],"phi":paras[2],"offset":paras[3],"sweet_freq":sweet_freq,"sweet_flux":(1/2.5)*sweet_flux}
+            self.fit_packs = {"A":paras[0],"f":paras[1],"phi":paras[2],"offset":paras[3],"sweet_freq":sweet_freq,"sweet_flux":sweet_flux}
         except Exception as err:
             print(f"While fitting got error = {err}")
             traceback.print_exc()
@@ -319,7 +319,7 @@ class analysis_tools():
         if len(list(self.fit_packs.keys())) != 0:
             fit_x = self.fit_results.coords['para_fit']
             fit_y = self.fit_results.data_vars['fitting']
-            ax = Plotter.add_scatter_on_ax(self.fit_packs["sweet_flux"]*2.5,self.fit_packs["sweet_freq"],ax,c='red',marker="*",s=300)
+            ax = Plotter.add_scatter_on_ax(self.fit_packs["sweet_flux"],self.fit_packs["sweet_freq"],ax,c='red',marker="*",s=300)
             ax = Plotter.add_plot_on_ax(fit_x,fit_y,ax,c='red')
         
         if len(self.collected_flux) != 0 and len(self.collected_freq) != 0:
@@ -404,7 +404,7 @@ class analysis_tools():
             else:
                 self.filtered_z, self.filtered_f, self.paras = remove_outlier_after_fit(parabola,self.fit_z,self.fit_f)
             
-            self.fit_packs["sweet_bias"] = self.ref_z + (1/2.5)*float(-self.paras[1]/(2*self.paras[0])) # offset + z_pulse_amp
+            self.fit_packs["sweet_bias"] = self.ref_z + float(-self.paras[1]/(2*self.paras[0])) # offset + z_pulse_amp
             self.fit_packs["xyf"] = float(parabola(float(-self.paras[1]/(2*self.paras[0])),*self.paras))*1e9
             self.fit_packs["parabola_paras"] = list(self.paras)
     

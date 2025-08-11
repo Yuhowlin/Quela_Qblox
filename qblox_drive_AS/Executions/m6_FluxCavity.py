@@ -7,7 +7,7 @@ from qblox_drive_AS.support.ExpFrames import FluxCavity
 Execution:bool = 1
 DRandIP = {"dr":"dr2","last_ip":"10"}
 freq_span_range:dict = {
-                        "q0":[-0.5e6,0.5e6],
+                        "q1":[-0.5e6,0.5e6],
                         # "q1":[-0.5e6,0.5e6],
                         # "q2":[-1e6,1e6],
                         # "q3":[-1e6,1e6],

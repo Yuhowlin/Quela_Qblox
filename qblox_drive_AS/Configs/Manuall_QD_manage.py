@@ -204,7 +204,7 @@ class QD_modifier():
             if len(list(cp_elements.keys())) != 0:
                 for cp in cp_elements:
                     slightly_print(f"Set coupler {cp} at {cp_elements[cp]} V.")
-                    self.QD_agent.Fluxmanager.save_idleBias_for(cp, (1/2.5)*cp_elements[cp])
+                    self.QD_agent.Fluxmanager.save_idleBias_for(cp, cp_elements[cp])
                 self.to_modifiy_item.append("coupler_bias")
 
     def save_modifications(self):
