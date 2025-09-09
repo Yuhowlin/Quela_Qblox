@@ -6,14 +6,17 @@ from qblox_drive_AS.support.ExpFrames import XTomography
 ''' fill in '''
 Execution: bool = 1
 DRandIP = {"dr": "dr2", "last_ip": "10"}
-target_q: list = ["q0"]
+target_q: list = ["q1"]
 un_trained_pulse: bool = True
-gate_counts = range(5)
-avg_n: int = 1000
-init_state: str = "zero" 
+maxmum_gate = 100
+avg_n: int = 10000
+init_state: str = "zero" # zero plus plus_i
 ''' Don't Touch '''
+gate_counts = range(maxmum_gate)
 save_dir = Data_manager().build_packs_folder()
 EXP = XTomography(QD_path=find_latest_QD_pkl_for_dr(DRandIP["dr"], DRandIP["last_ip"]), data_folder=save_dir)
 EXP.SetParameters(target_q, init_state, avg_n, gate_counts, Execution)
 EXP.WorkFlow()
-EXP.RunAnalysis()
+EXP.RunAnalysis(
+    # new_file_path = r"C:\Users\ASUS\Documents\GitHub\Quela_Qblox\qblox_drive_AS\Meas_raw\20250811\H13M59S13\XTomography_20250811135958.nc"
+    )

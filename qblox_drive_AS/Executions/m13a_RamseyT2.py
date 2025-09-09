@@ -10,7 +10,7 @@ max_evo_time:float = 30e-6
 target_qs:list = ["q0"]
 time_sampling_func:str = "linspace"
 time_ptsORstep:int|float = 100
-AVG:int = 100
+AVG:int = 250
 histo_counts:int = 1
 
 #?? Notes: While you're using one-shot method, time samples (time_pts) * shots (AVG) must less than or equal to 131000. 

@@ -1373,6 +1373,10 @@ class analysis_tools():
         train_key = f"{var}_z"
         if train_key not in self.ds:
             raise ValueError(f"訓練數據 {train_key} 不存在於數據集")
+        
+        # self.train_set = self.ds[train_key].sel(pulse_num=[0,1])
+        # self.train_set = self.train_set.rename( { "pulse_num":"prepared_state"})
+
 
         datas_z = moveaxis(array(self.ds[train_key]), 0, 1) * 1000  # shape (pulse_num, IQ, shots)
         p0_data = datas_z[0]  # 取第一個 pulse_num 作為基態

@@ -3280,24 +3280,32 @@ class XTomography(ExpGovernment):
 
     def RunMeasurement(self):
         from qblox_drive_AS.aux_measurement.TomoGateErrorTest import XTomographyPS
-        meas = XTomographyPS()
-        meas.target_q = self.target_q
-        meas.initial_state = self.init_state
-        meas._gate_counts = self.gate_counts
-        meas.execution = self.execution
-        meas.n_avg = self.avg_n
-        meas.meas_ctrl = self.meas_ctrl
-        meas.QD_agent = self.QD_agent
+        import xarray as xr
 
-        meas.run()
-        dataset = meas.dataset
+        for max_gate in self.gate_counts:
+            meas = XTomographyPS()
+            meas.target_q = self.target_q
+            meas.initial_state = self.init_state
+            meas._gate_counts = list(range(max_gate,max_gate + 1))  # ✅ 每次不同的 gate range
+            meas.execution = self.execution
+            meas.n_avg = self.avg_n
+            meas.meas_ctrl = self.meas_ctrl
+            meas.QD_agent = self.QD_agent
+
+            meas.run()
+            ds = meas.dataset
+            eyeson_print(f"now in gate {max_gate}")
+            if max_gate == 0:
+                datasets = ds
+            else:
+                datasets = xr.concat([datasets, ds], dim="pulse_num") 
 
         if self.execution:
             if self.save_dir is not None:
                 filename = f"XTomography_{datetime.now().strftime('%Y%m%d%H%M%S') if self.JOBID is None else self.JOBID}"
                 self.save_path = os.path.join(self.save_dir, filename)
                 self.__raw_data_location = self.save_path + ".nc"
-                dataset.to_netcdf(self.__raw_data_location)
+                datasets.to_netcdf(self.__raw_data_location)
             else:
                 self.save_fig_path = None
 

@@ -102,7 +102,7 @@
     },
     "modulation_frequencies": {
       "q0:mw-q0.01": {
-        "lo_freq": 2731861468
+        "lo_freq": 2737904123
       },
       "q0:res-q0.ro": {
         "lo_freq": 4900000000.0

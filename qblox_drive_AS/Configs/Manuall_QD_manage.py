@@ -283,7 +283,7 @@ if __name__ == "__main__":
 
 
 
-    QD_path = r"C:\Users\ASUS\Documents\GitHub\Quela_Qblox\qblox_drive_AS\QD_backup\20250806\DR2#10_SumInfo.pkl"
+    QD_path = r"C:\Users\ASUS\Documents\GitHub\Quela_Qblox\qblox_drive_AS\QD_backup\20250811\DR2#10_SumInfo.pkl"
 
 
     QMaster = QD_modifier(QD_path)
@@ -296,7 +296,7 @@ if __name__ == "__main__":
     QMaster.reset_rotation_angle(target_qs=[])    # target_qs = ['q0', 'q1', ...]
 
     """ Set RO amp by a coef. """
-    QMaster.set_ROamp_by_coef(roAmp_coef_dict={"q0":0.9,}) # roAmp_coef_dict = {"q0":0.93, "q1":0.96, ...}, set None or {} to bypass 
+    QMaster.set_ROamp_by_coef(roAmp_coef_dict={"q0":1,}) # roAmp_coef_dict = {"q0":0.93, "q1":0.96, ...}, set None or {} to bypass 
 
     """ Set RO freq """
     QMaster.set_ROF(ROFs={})                      # ROFs = {"q0":6.0554e9, .....}

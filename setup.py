@@ -11,9 +11,9 @@ setup(
     url='https://github.com/junyeeeeeeeeee/Quela_Qblox',
     packages=find_packages(),          # Automatically find package directories
     install_requires=[                 # Optional, if you have dependencies
-        'qblox-instruments==0.15.0',
-        'quantify-core==0.7.9',
-        'quantify-scheduler==0.22.2',
+        'qblox-instruments==0.16.0',
+        'quantify-core==0.8.1',
+        'quantify-scheduler==0.23.0',
         'colorama',
         'scikit-learn',
         'scipy',

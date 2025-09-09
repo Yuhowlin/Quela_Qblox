@@ -1,4 +1,4 @@
-QD_file: C:\Users\ASUS\Documents\GitHub\Quela_Qblox\qblox_drive_AS\QD_backup\20250806\DR2#10_SumInfo.pkl
+QD_file: C:\Users\ASUS\Documents\GitHub\Quela_Qblox\qblox_drive_AS\QD_backup\20250811\DR2#10_SumInfo.pkl
 Chip name: FQV1_WJV_Al#11
 Comments: ---
 
@@ -8,36 +8,36 @@ TOF = 280 ns
 Active Reset OFF, Reset time = 1000 us
 
 [q0]
-    bare    = 4.812696144309497 GHz
-    ROF     = 4.812944742889734 GHz
-    RO-amp  = 0.073 V
+    bare    = 4.812705016168512 GHz
+    ROF     = 4.8129345919974025 GHz
+    RO-amp  = 0.113 V
     ROT     = 10.0 us
-    f01     = 2.7318614683012745 GHz
-    GE-amp  = 0.5055040417960905 V
+    f01     = 2.7112109738194174 GHz
+    GE-amp  = 0.6092466493569825 V
     GE-dura = 100.0 ns
     EF-dura = 40.0 ns
     Motzoi  = 0
-    x       = 0.2485985802373886 MHz
-    g       = 22.744066174789612 MHz
+    x       = 0.22957582889080047 MHz
+    g       = 21.964795393580452 MHz
     Ec      = 0.0 MHz
 
 [q1]
-    bare    = 4.913555505186263 GHz
-    ROF     = 4.913873300503737 GHz
+    bare    = 4.913539775472589 GHz
+    ROF     = 4.913874182715736 GHz
     RO-amp  = 0.225 V
     ROT     = 4.0 us
-    f01     = 4.0 GHz
-    GE-amp  = 0.05 V
+    f01     = 3.042146559767843 GHz
+    GE-amp  = 0.5760023764755418 V
     GE-dura = 100.0 ns
     EF-dura = 40.0 ns
     Motzoi  = 0
-    x       = 0.31779531747341155 MHz
-    g       = 0.0 MHz
+    x       = 0.33440724314594267 MHz
+    g       = 25.016143709747308 MHz
     Ec      = 0.0 MHz
 
 [q2]
-    bare    = 5.013639831964223 GHz
-    ROF     = 5.013827474369856 GHz
+    bare    = 5.013593202079183 GHz
+    ROF     = 5.013665668181467 GHz
     RO-amp  = 0.225 V
     ROT     = 4.0 us
     f01     = 4.0 GHz
@@ -45,13 +45,13 @@ Active Reset OFF, Reset time = 1000 us
     GE-dura = 100.0 ns
     EF-dura = 40.0 ns
     Motzoi  = 0
-    x       = 0.18764240563297271 MHz
+    x       = 0.07246610228443146 MHz
     g       = 0.0 MHz
     Ec      = 0.0 MHz
 
 [q3]
-    bare    = 5.113452272499001 GHz
-    ROF     = 5.113712865280391 GHz
+    bare    = 5.113434530524193 GHz
+    ROF     = 5.113540196865546 GHz
     RO-amp  = 0.225 V
     ROT     = 4.0 us
     f01     = 4.0 GHz
@@ -59,7 +59,7 @@ Active Reset OFF, Reset time = 1000 us
     GE-dura = 100.0 ns
     EF-dura = 40.0 ns
     Motzoi  = 0
-    x       = 0.2605927813901901 MHz
+    x       = 0.10566634135246276 MHz
     g       = 0.0 MHz
     Ec      = 0.0 MHz
 

@@ -60,21 +60,20 @@ class XTomographyPS(ScheduleConductor):
                 reset = sched.add(Reset(*self._target_q))
                 for q in self._target_q:
                 # Prepare initial state
-                    if self._init_state == "plus":
+                    if self._init_state == "plus" and x_gate_count >=2 :
                         last_op = sched.add(Rxy(theta=90.0, phi=0, qubit=q), ref_op=reset)  # H gate ≈ Rx(pi/2)
-                    elif self._init_state == "plus_i":
+                    elif self._init_state == "plus_i"and x_gate_count >=2 :
                         last_op = sched.add(Rxy(theta=90.0, phi=90.0, qubit=q), ref_op=reset)
                     else:
                         last_op = reset
                     # X gates3
                     for _ in range(x_gate_count):
                         last_op = sched.add(X(q))
-
                 # Tomography: X, Y, Z bases
                     if basis == 'X':
                         sched.add(Rxy(theta=90.0, phi=90.0, qubit=q))
                     elif basis == 'Y':
-                        sched.add(Rxy(theta=90.0, phi=0, qubit=q))
+                        sched.add(Rxy(theta=-90.0, phi=0, qubit=q))
 
                     # 加 buffer
                     sched.add(Measure(q,
@@ -89,7 +88,6 @@ class XTomographyPS(ScheduleConductor):
         self.__x_gate_count = ManualParameter(name="X_gate_count", unit="#", label="Number of X gates")
         self.__x_gate_count.batched = True
         self.basis = ["X", "Y", "Z"]
-
         self.QD_agent = check_acq_channels(self.QD_agent, self._target_q)
 
         self.__sched_kwargs = dict(
@@ -116,14 +114,15 @@ class XTomographyPS(ScheduleConductor):
             gate_grid, basis_grid, shot_grid = np.meshgrid(gate_counts, basis_labels, arange(shots), indexing="ij")
 
             self.meas_ctrl.setpoints_grid((
-                shot_grid.flatten(),
+                
                 basis_grid.flatten(),
                 gate_grid.flatten(),
+                shot_grid.flatten(),
             ))
 
 
         else:
-            self.__sched_kwargs['gate_counts'] = [1, 2, 3]  # preview 3 points only
+            self.__sched_kwargs['gate_counts'] = [0, 1, 2]  # preview 3 points only
 
     def __RunAndGet__(self, *args, **kwargs):
         if self._execution:
@@ -135,27 +134,30 @@ class XTomographyPS(ScheduleConductor):
 
             gate_len = len(self._gate_counts)
             shots = self._avg_n
-            i_data = array(rs_ds["y0"]).reshape(gate_len, 3, shots)  # shape: (gate, basis, shots)
-            q_data = array(rs_ds["y1"]).reshape(gate_len, 3, shots)
+            # reshape 成 (pulse_num, basis, index)
+            i_data = array(rs_ds["y0"]).reshape(shots, gate_len, 3)
+            q_data = array(rs_ds["y1"]).reshape(shots, gate_len, 3)
 
             # ✅ 設定座標
-            
-            ds.coords["index"] = arange(i_data.shape[-1])
+            ds.coords["index"] = arange(shots)
             ds.coords["pulse_num"] = self._gate_counts
             ds.coords["mixer"] = ["I", "Q"]
 
-            # ✅ 建立 q0_x, q0_y, q0_z
             basis_labels = ["x", "y", "z"]
             for basis_idx, basis in enumerate(basis_labels):
-                # shape: (mixer, pulse_num, index)
-                i_part = i_data[:, basis_idx, :].T  # → shape: (index, pulse_num)
-                q_part = q_data[:, basis_idx, :].T
-                full_data = array([i_part, q_part])  # → shape: (mixer, index, pulse_num)
-                full_data = full_data.transpose(0, 2, 1)  # → (mixer, pulse_num, index)
+                # 取出 shape: (shots, pulse_num)
+                i_part = i_data[:, :, basis_idx]
+                q_part = q_data[:, :, basis_idx]
+
+                # 轉成 (pulse_num, index)
+                i_part = i_part.T
+                q_part = q_part.T
+
+                # 再加 mixer 維度 → (mixer, pulse_num, index)
+                full_data = array([i_part, q_part])
 
                 var_name = f"{target_q}_{basis}"
                 ds[var_name] = (["mixer", "pulse_num", "index"], full_data)
-
             # ✅ 附加 metadata
             ds.attrs["execution_time"] = Data_manager().get_time_now()
             ds.attrs["bases"] = "x,y,z"

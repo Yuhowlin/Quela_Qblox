@@ -9,9 +9,9 @@ from qblox_drive_AS.support.UserFriend import mark_input, slightly_print
 
 
 """ Fill in """
-QD_path = r"C:\Users\ASUS\Documents\GitHub\Quela_Qblox\qblox_drive_AS\QD_backup\20250804\DR2#10_SumInfo.pkl"
+QD_path = r"C:\Users\ASUS\Documents\GitHub\Quela_Qblox\qblox_drive_AS\QD_backup\20250811\DR2#10_SumInfo.pkl"
 Hcfg = [
-    {"name":"q0:mw", "slot":4, "port":0},
+    {"name":"q1:mw", "slot":4, "port":0},
     {"name":"q0:res", "slot":8, "port":0},
     {"name":"q1:res", "slot":8, "port":0},
     {"name":"q2:res", "slot":8, "port":0},
