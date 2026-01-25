@@ -1469,7 +1469,7 @@ class analysis_tools():
         plt.tight_layout()
         if save_pic_path:
             plt.savefig(save_pic_path + "_TomoGateError.png")
-        plt.show()
+
 
         import matplotlib.pyplot as plt
         from mpl_toolkits.mplot3d import Axes3D
@@ -1504,7 +1504,6 @@ class analysis_tools():
 
         if save_pic_path:
             plt.savefig(save_pic_path + "_TomoGateError_3D.png")
-        plt.show()
 
         # **新增距離 vs. Gate 數量的 2D 圖**
         fig_dist = plt.figure(figsize=(8, 6))
@@ -1518,7 +1517,7 @@ class analysis_tools():
 
         if save_pic_path:
             plt.savefig(save_pic_path + "_TomoGateError_Distance.png")
-        plt.show()
+        
         import pandas as pd
         csv_data = pd.DataFrame({            
             "Gate Num": gate_num,

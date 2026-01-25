@@ -6,8 +6,8 @@ from qblox_drive_AS.support.QDmanager import QDmanager, hcfg_composer
 # 3. Flux bias port: ":fl", like 'q12:fl', 'q999:fl', ...
 
 
-cluster_IP:str = "192.168.1.10"
-dr_name:str = "dr2"
+cluster_IP:str = "192.168.50.11"
+dr_name:str = "dr1"
 qubit_number_onChip:int = 4
 coupler_number_onChip:int = 0
 chip_name:str = "FQV1_WJV_Al#11"
@@ -16,10 +16,10 @@ chip_type:str = "4Q"
 
 Hcfg = [
     {"name":"q0:mw", "slot":4, "port":0},
-    {"name":"q0:res", "slot":8, "port":0},
-    {"name":"q1:res", "slot":8, "port":0},
-    {"name":"q2:res", "slot":8, "port":0},
-    {"name":"q3:res", "slot":8, "port":0},
+    {"name":"q0:res", "slot":6, "port":0},
+    {"name":"q1:res", "slot":6, "port":0},
+    {"name":"q2:res", "slot":6, "port":0},
+    {"name":"q3:res", "slot":6, "port":0},
     {"name":"q0:fl", "slot":2, "port":0},
     {"name":"q1:fl", "slot":2, "port":1},
     {"name":"q2:fl", "slot":2, "port":2},

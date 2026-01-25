@@ -5,13 +5,13 @@ from qblox_drive_AS.support.ExpFrames import SpinEcho
 
 ''' fill in '''
 Execution:bool = 1
-DRandIP = {"dr":"dr2","last_ip":"10"}
+DRandIP = {"dr":"dr1","last_ip":"11"}
 max_evo_time = 250e-6
-target_qs = ["q0"]
+target_qs = ["q3"]
 time_sampling_func:str = "linspace"
 time_ptsORstep:int|float = 100
 AVG:int = 250
-histo_counts:int = 1
+histo_counts:int = 15
 
 #?? Notes: While you're using one-shot method, time samples (time_pts) * shots (AVG) must less than or equal to 131000. 
 use_OneShot:bool = False

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='Quela_Qblox',          # Replace with your package name
+    name='QUELA_QBLOX',          # Replace with your package name
     version='2024.11.13',
     author='Dai-Jia, Wu',
     author_email='porkface0301@gmail.com',

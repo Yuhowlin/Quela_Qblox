@@ -7,8 +7,8 @@ from qblox_drive_AS.support.ExpFrames import DragCali
 ''' fill in '''
 Execution:bool = 1
 DRandIP = {"dr":"dr1","last_ip":"11"}
-drag_coef_range:list = [-1,1]
-target_qs = ["q1","q3"]
+drag_coef_range:list = [-0.4,0]
+target_qs = ["q2"]
 coef_sampling_func:str = 'linspace'
 coef_ptsORstep:int|float = 50
 AVG:int = 500

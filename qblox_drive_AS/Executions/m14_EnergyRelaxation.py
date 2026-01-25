@@ -5,13 +5,13 @@ from qblox_drive_AS.support.ExpFrames import EnergyRelaxation
 
 ''' fill in '''
 Execution:bool = 1
-DRandIP = {"dr":"dr2","last_ip":"10"}
-max_evo_time:float = 300e-6
-target_qs:list = ["q0"]
+DRandIP = {"dr":"dr1","last_ip":"11"}
+max_evo_time:float = 200e-6
+target_qs:list = ["q3"]
 time_sampling_func:str = "linspace"
 time_ptsORstep:int|float = 100
 AVG:int = 250
-histo_counts:int = 1
+histo_counts:int = 15
 
 #?? Notes: While you're using one-shot method, time samples (time_pts) * shots (AVG) must less than or equal to 131000. 
 use_OneShot:bool = 0

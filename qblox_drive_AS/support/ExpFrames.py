@@ -3288,6 +3288,10 @@ class XTomography(ExpGovernment):
             meas.initial_state = self.init_state
             meas._gate_counts = list(range(max_gate,max_gate + 1))  # ✅ 每次不同的 gate range
             meas.execution = self.execution
+            # if max_gate == 0 or max_gate == 1:
+            #     meas.n_avg = 10000
+            # else:
+            #     meas.n_avg = self.avg_n
             meas.n_avg = self.avg_n
             meas.meas_ctrl = self.meas_ctrl
             meas.QD_agent = self.QD_agent
@@ -3312,7 +3316,7 @@ class XTomography(ExpGovernment):
     def CloseMeasurement(self):
         shut_down(self.cluster, self.Fctrl)
     
-    def RunAnalysis(self, new_QD_path: str = None, new_file_path: str = None):
+    def RunAnalysis(self, i : str = None, k : int = None, new_QD_path: str = None, new_file_path: str = None):
         if self.execution:
             if new_QD_path is None:
                 QD_file = self.QD_path
@@ -3325,7 +3329,14 @@ class XTomography(ExpGovernment):
             else:
                 file_path = new_file_path
                 fig_path = os.path.split(new_file_path)[0]
-
+            if i is None:
+                pass
+            else:
+                state_type = i
+            if k is None:
+                pass
+            else:
+                shotnum = k
             QD_savior = QDmanager(QD_file)
             QD_savior.QD_loader()
 
@@ -3337,7 +3348,7 @@ class XTomography(ExpGovernment):
                     ANA = Multiplex_analyzer("t2")
                     ANA._import_data(ds,var_dimension=0,fq_Hz=QD_savior.quantum_device.get_element(var[:2]).clock_freqs.f01())
                     ANA._start_analysis(var_name=var[:2])
-                    pic_path = os.path.join(fig_path,f"{var[:2]}_TomoGateErrorTest_{datetime.now().strftime('%Y%m%d%H%M%S') if self.JOBID is None else self.JOBID}")
+                    pic_path = os.path.join(fig_path,f"{var[:2]}_TomoGateErrorTest_zero_fre_{i}_shot_5000_{datetime.now().strftime('%Y%m%d%H%M%S') if self.JOBID is None else self.JOBID}")
                     ANA._export_result(pic_path)                
             ds.close()
 

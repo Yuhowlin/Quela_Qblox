@@ -5,10 +5,10 @@ from qblox_drive_AS.support.ExpFrames import PowerCavity
 
 ''' fill in '''
 Execution:bool = True
-DRandIP = {"dr":"dr2","last_ip":"10"}
+DRandIP = {"dr":"dr1","last_ip":"11"}
 freq_span_range:dict = {"q0":[-1e6,+1e6],
                         "q1":[-1e6,+1e6],
-                        "q2":[-1e6,+1e6],
+                        "q2":[-1e6,+2e6],
                         "q3":[-1e6,+1e6],
                         
                         }    # np.linspace(rof+span, rof+span, freq_pts)

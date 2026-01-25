@@ -85,19 +85,26 @@ def init_meas(QuantumDevice_path:str)->Tuple[QDmanager, Cluster, MeasurementCont
     dr_loc = get_dr_loca(QuantumDevice_path)
     cluster_ip = ip_register[dr_loc.lower()]
 
-    
+    print(f"cluster{dr_loc.lower()}")
+
     if cluster_ip in list(port_register.keys()):
         # try maximum 3 connections to prevent connect timeout error 
-        try:
-            cluster = Cluster(name = f"cluster{dr_loc.lower()}",identifier = FQDN, port=int(port_register[cluster_ip]))
+        # try:
+        #     cluster = Cluster(name = f"cluster{dr_loc.lower()}",identifier = FQDN, port=int(port_register[cluster_ip]))
             
-        except:
-            try:
-                warning_print("First cluster connection trying")
-                cluster = Cluster(name = f"cluster{dr_loc.lower()}",identifier = FQDN, port=int(port_register[cluster_ip]))
-            except:
-                warning_print("Second cluster connection trying")
-                cluster = Cluster(name = f"cluster{dr_loc.lower()}",identifier = FQDN, port=int(port_register[cluster_ip]))          
+        # except:
+        #     try:
+        #         warning_print("First cluster connection trying")
+        #         cluster = Cluster(name = f"cluster{dr_loc.lower()}",identifier = FQDN, port=int(port_register[cluster_ip]))
+        #     except:
+        #         warning_print("Second cluster connection trying")
+        #         cluster = Cluster(name = f"cluster{dr_loc.lower()}",identifier = FQDN, port=int(port_register[cluster_ip]))          
+        if f"cluster{dr_loc.lower()}" == "clusterdr1":
+            cluster = Cluster(name="clusterdr1", identifier="192.168.50.11")
+        else :
+            print("yee")
+            cluster = Cluster(name="clusterdrke", identifier="192.168.50.242")
+    
     else:
         try:
             warning_print("cluster IP connection trying")

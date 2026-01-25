@@ -4,12 +4,18 @@ from qblox_drive_AS.support import QDmanager
 from quantify_core.measurement.control import MeasurementControl
 from xarray import Dataset
 from quantify_scheduler.schedules.schedule import Schedule
-
+from qcodes import Instrument
 
 
 class ScheduleConductor(ABC):
     """ Some adjustable parameters please name started with "_" like: "self._pi_dura" """
     def __init__(self):
+        try:
+            # 試著找看看有沒有叫 dummy 的，有的話殺掉
+            Instrument.find_instrument("dummy").close()
+        except KeyError:
+            # 沒找到最好，什麼都不做
+            pass
         self.QD_agent = QDmanager()
         self.meas_ctrl =  MeasurementControl("dummy")
         self._execution:bool = True

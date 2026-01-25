@@ -1,65 +1,65 @@
-QD_file: C:\Users\ASUS\Documents\GitHub\Quela_Qblox\qblox_drive_AS\QD_backup\20250811\DR2#10_SumInfo.pkl
+QD_file: /Users/kelab_01/Documents/GitHub/Quela_Qblox/qblox_drive_AS/QD_backup/20260104/DR1#11_SumInfo09995.pkl
 Chip name: FQV1_WJV_Al#11
 Comments: ---
 
 RO-atte = 50 dB
 XY-atte = 0 dB
 TOF = 280 ns
-Active Reset OFF, Reset time = 1000 us
+Active Reset OFF, Reset time = 700 us
 
 [q0]
-    bare    = 4.812705016168512 GHz
-    ROF     = 4.8129345919974025 GHz
-    RO-amp  = 0.113 V
-    ROT     = 10.0 us
-    f01     = 2.7112109738194174 GHz
-    GE-amp  = 0.6092466493569825 V
+    bare    = 4.563602230582858 GHz
+    ROF     = 4.564383661536282 GHz
+    RO-amp  = 0.562 V
+    ROT     = 2.0 us
+    f01     = 3.579208494836512 GHz
+    GE-amp  = 0.2913858737248444 V
     GE-dura = 100.0 ns
     EF-dura = 40.0 ns
     Motzoi  = 0
-    x       = 0.22957582889080047 MHz
-    g       = 21.964795393580452 MHz
+    x       = 0.7814309534235 MHz
+    g       = 27.73509934123524 MHz
     Ec      = 0.0 MHz
 
 [q1]
-    bare    = 4.913539775472589 GHz
-    ROF     = 4.913874182715736 GHz
-    RO-amp  = 0.225 V
-    ROT     = 4.0 us
-    f01     = 3.042146559767843 GHz
-    GE-amp  = 0.5760023764755418 V
+    bare    = 4.65887895478931 GHz
+    ROF     = 4.659180305886024 GHz
+    RO-amp  = 0.289 V
+    ROT     = 3.0 us
+    f01     = 2.891068819438811 GHz
+    GE-amp  = 0.40669198546034535 V
     GE-dura = 100.0 ns
     EF-dura = 40.0 ns
     Motzoi  = 0
-    x       = 0.33440724314594267 MHz
-    g       = 25.016143709747308 MHz
+    x       = 0.3013510967130661 MHz
+    g       = 23.08097751543986 MHz
     Ec      = 0.0 MHz
 
 [q2]
-    bare    = 5.013593202079183 GHz
-    ROF     = 5.013665668181467 GHz
-    RO-amp  = 0.225 V
-    ROT     = 4.0 us
-    f01     = 4.0 GHz
-    GE-amp  = 0.05 V
-    GE-dura = 100.0 ns
+    bare    = 4.754192407363106 GHz
+    ROF     = 4.75485830721941 GHz
+    RO-amp  = 0.878 V
+    ROT     = 1.0 us
+    f01     = 3.969329851170326 GHz
+    GE-amp  = 0.6598550841006535 V
+    GE-dura = 40.0 ns
     EF-dura = 40.0 ns
-    Motzoi  = 0
-    x       = 0.07246610228443146 MHz
-    g       = 0.0 MHz
+    Motzoi  = -0.18291574084913542
+    x       = 0.6658998563041687 MHz
+    g       = 30.31145508031377 MHz
     Ec      = 0.0 MHz
 
 [q3]
-    bare    = 5.113434530524193 GHz
-    ROF     = 5.113540196865546 GHz
-    RO-amp  = 0.225 V
-    ROT     = 4.0 us
-    f01     = 4.0 GHz
-    GE-amp  = 0.05 V
+    bare    = 4.849609883894447 GHz
+    ROF     = 4.84995618977133 GHz
+    RO-amp  = 0.45 V
+    ROT     = 2.0 us
+    f01     = 2.964175955813215 GHz
+    GE-amp  = 0.671369538541205 V
     GE-dura = 100.0 ns
     EF-dura = 40.0 ns
     Motzoi  = 0
-    x       = 0.10566634135246276 MHz
-    g       = 0.0 MHz
+    x       = 0.3463058768835068 MHz
+    g       = 25.552629018734876 MHz
     Ec      = 0.0 MHz
 

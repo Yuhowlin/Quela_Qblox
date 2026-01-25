@@ -10,9 +10,9 @@ Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
-Requires-Dist: qblox-instruments==0.15.0
-Requires-Dist: quantify-core==0.7.9
-Requires-Dist: quantify-scheduler==0.22.2
+Requires-Dist: qblox-instruments==0.16.0
+Requires-Dist: quantify-core==0.8.1
+Requires-Dist: quantify-scheduler==0.23.0
 Requires-Dist: colorama
 Requires-Dist: scikit-learn
 Requires-Dist: scipy
