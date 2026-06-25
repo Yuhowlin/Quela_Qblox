@@ -1469,7 +1469,7 @@ class analysis_tools():
         plt.tight_layout()
         if save_pic_path:
             plt.savefig(save_pic_path + "_TomoGateError.png")
-        plt.show()
+
 
         import matplotlib.pyplot as plt
         from mpl_toolkits.mplot3d import Axes3D
@@ -1504,7 +1504,6 @@ class analysis_tools():
 
         if save_pic_path:
             plt.savefig(save_pic_path + "_TomoGateError_3D.png")
-        plt.show()
 
         # **新增距離 vs. Gate 數量的 2D 圖**
         fig_dist = plt.figure(figsize=(8, 6))
@@ -1518,7 +1517,7 @@ class analysis_tools():
 
         if save_pic_path:
             plt.savefig(save_pic_path + "_TomoGateError_Distance.png")
-        plt.show()
+        
         import pandas as pd
         csv_data = pd.DataFrame({            
             "Gate Num": gate_num,
@@ -1528,6 +1527,192 @@ class analysis_tools():
         })
         if save_pic_path:
             csv_data.to_csv(save_pic_path + "_TomoGateError.csv", index=False)
+
+    def NewTomogateError_ana(self, var: str, transition_freq_Hz: float = None):
+        """ 使用獨立的 training 數據作為訓練，並對 x, y, z 基底進行 GMM 分析 """
+        from xarray import DataArray
+        from numpy import array, arange, moveaxis
+        import numpy as np
+        
+        bases = ["x", "y", "z"]  
+        self.qubit = var
+        self.fq = transition_freq_Hz  
+        self.md = GMMROFidelity()
+
+        # ==========================================
+        # 1. 讀取獨立的 Training 數據進行 GMM 訓練
+        # ==========================================
+        train_key = f"{var}_training"
+        if train_key not in self.ds:
+            raise ValueError(f"訓練數據 {train_key} 不存在於數據集，請確認是否執行了 training 模式")
+
+        # datas_train shape: (mixer, state, train_index)
+        datas_train = array(self.ds[train_key]) * 1000  
+        
+        self.train_set = DataArray(
+            datas_train,
+            coords=[("mixer", ["I", "Q"]), ("prepared_state", [0, 1]), ("index", arange(datas_train.shape[-1]))]
+        )
+        self.md._import_data(self.train_set)
+        self.md._start_analysis()
+        self.g1d_fidelity = self.md.export_G1DROFidelity()
+
+        # ==========================================
+        # 2. 針對 x, y, z 進行 GMM 分析與 Population 計算
+        # ==========================================
+        self.plot_packs = {}  # 改用 plot_packs 來儲存繪圖數據，取代原先的 fit_packs
+
+        for basis in bases:
+            key = f"{var}_{basis}"
+            if key not in self.ds:
+                print(f"Warning: {key} not found in dataset")
+                continue
+
+            gate_num = array(self.ds.coords["pulse_num"])
+            has_sym = "sym" in self.ds[key].dims
+
+            # 建立一個內部函數來處理 Discriminator
+            def get_population(data_array):
+                # 將形狀從 (mixer, pulse_num, index) 擴展為 Discriminator 需要的 (mixer, pulse_num, prepared_state, index)
+                arr = np.expand_dims(array(data_array) * 1000, axis=2)
+                da = DataArray(
+                    arr,
+                    coords=[("mixer", ["I", "Q"]), ("gate_num", gate_num), 
+                            ("prepared_state", [0]), ("index", arange(arr.shape[-1]))]
+                )
+                self.md.discriminator._import_data(da)
+                self.md.discriminator._start_analysis()
+                ans = self.md.discriminator._export_result()
+
+                p_rec = []
+                for dim_1_data in ans:          # 遍歷 gate_num
+                    for dim_2_data in dim_1_data: # 遍歷 prepared_state (只有一維)
+                        p = list(dim_2_data).count(1) / len(list(dim_2_data))
+                        p_rec.append(p)
+                return array(p_rec)
+
+            # 處理 SymRO 邏輯
+            if has_sym:
+                p_reg = get_population(self.ds[key].sel(sym="reg"))
+                p_inv = get_population(self.ds[key].sel(sym="inv"))
+                # 反轉量測時，物理的 |0> 態代表邏輯的 |1> 態，因此邏輯 Population 為 1 - p_inv
+                p_final = (p_reg + (1.0 - p_inv)) / 2.0
+            else:
+                p_final = get_population(self.ds[key])
+
+            # 將單純的數據儲存下來，完全移除擬合
+            self.plot_packs[basis] = {
+                "data": p_final,
+                "gate_num": gate_num
+            }
+            print(f"🎯 {basis} 分析完成！")
+
+    def NewTomogateError_plot(self, save_pic_path: str = None):
+        """ 繪製 `x, y, z` 三個基底的 Gate Error 數據（無擬合曲線） """
+        import matplotlib.pyplot as plt
+        from mpl_toolkits.mplot3d import Axes3D
+        import numpy as np
+
+        # ==========================================
+        # 2D 基礎 Population 圖
+        # ==========================================
+        bases = ["x", "y", "z"]
+        fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+
+        # 若其中一個基底有資料，則提取出共通的 gate_num
+        gate_num = []
+        for b in bases:
+            if b in self.plot_packs:
+                gate_num = self.plot_packs[b]["gate_num"]
+                break
+
+        for idx, basis in enumerate(bases):
+            ax: plt.Axes = axs[idx]
+            if basis not in self.plot_packs:
+                ax.set_title(f"{self.qubit} - {basis} Basis (No Data)")
+                continue
+
+            data = self.plot_packs[basis]["data"]
+
+            # 只畫原始數據的 Scatter
+            ax.scatter(gate_num, data, label="Measured Data", color="blue", alpha=0.6)
+
+            ax.set_title(f"{self.qubit} - {basis} Basis")
+            ax.set_xlabel("Gate Num")
+            ax.set_ylabel("|1> Population")
+            ax.legend()
+            ax.grid()
+
+        plt.tight_layout()
+        if save_pic_path:
+            plt.savefig(save_pic_path + "_TomoGateError.png")
+        # plt.show()
+
+        # ==========================================
+        # 3D 軌跡圖
+        # ==========================================
+        fig_3d = plt.figure(figsize=(8, 8))
+        ax_3d = fig_3d.add_subplot(111, projection='3d')
+
+        # 取得 x, y, z 的 data 值
+        x_data = self.plot_packs["x"]["data"] if "x" in self.plot_packs else np.zeros_like(gate_num)
+        y_data = self.plot_packs["y"]["data"] if "y" in self.plot_packs else np.zeros_like(gate_num)
+        z_data = self.plot_packs["z"]["data"] if "z" in self.plot_packs else np.zeros_like(gate_num)
+
+        # 設定顏色（使用 gate_num 漸變）
+        scatter = ax_3d.scatter(x_data, y_data, z_data, c=gate_num, cmap='viridis', alpha=0.8)
+        fig_3d.colorbar(scatter, ax=ax_3d, label="Gate Num")
+
+        # 計算與球心 (0.5, 0.5, 0.5) 的距離
+        distances = 2 * np.sqrt((x_data - 0.5) ** 2 + (y_data - 0.5) ** 2 + (z_data - 0.5) ** 2)
+        
+        # 畫半徑 0.5，中心在 (0.5, 0.5, 0.5) 的球
+        u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+        sphere_x = 0.5 + 0.5 * np.cos(u) * np.sin(v)
+        sphere_y = 0.5 + 0.5 * np.sin(u) * np.sin(v)
+        sphere_z = 0.5 + 0.5 * np.cos(v)
+        ax_3d.plot_wireframe(sphere_x, sphere_y, sphere_z, color="gray", alpha=0.3)
+
+        ax_3d.set_xlabel("X Axis")
+        ax_3d.set_ylabel("Y Axis")
+        ax_3d.set_zlabel("Z Axis")
+        ax_3d.set_title("3D Visualization of Tomography Gate Error")
+
+        if save_pic_path:
+            plt.savefig(save_pic_path + "_TomoGateError_3D.png")
+        # plt.show()
+
+        # ==========================================
+        # 距離 vs. Gate 數量的 2D 圖
+        # ==========================================
+        fig_dist = plt.figure(figsize=(8, 6))
+        ax_dist = fig_dist.add_subplot(111)
+        ax_dist.scatter(gate_num, distances, color='blue', alpha=0.6, label="length")
+        ax_dist.set_xlabel("Gate Num")
+        ax_dist.set_ylabel("Vector Length")
+        ax_dist.set_title("Vector Length vs. Gate Num")
+        ax_dist.legend()
+        plt.grid()
+
+        if save_pic_path:
+            plt.savefig(save_pic_path + "_TomoGateError_Distance.png")
+        # plt.show()
+
+        # ==========================================
+        # 匯出 CSV 檔案
+        # ==========================================
+        import pandas as pd
+        csv_data = pd.DataFrame({            
+            "Gate Num": gate_num,
+            "X Data": x_data,
+            "Y Data": y_data,
+            "Z Data": z_data
+        })
+        
+        if save_pic_path:
+            # save_pic_path 現在已經自帶 nc 檔名裡的全部參數資訊了！
+            csv_data.to_csv(save_pic_path + "_TomoGateError.csv", index=False)
+            print(f"📁 CSV 檔案已儲存：{save_pic_path}_TomoGateError.csv")
 
 ################################
 ####   Analysis Interface   ####
@@ -1588,6 +1773,8 @@ class Multiplex_analyzer(QCATAna,analysis_tools):
                 self.gateError_ana(kwargs["var_name"],self.transition_freq)
             case 't2':
                 self.TomogateError_ana(kwargs["var_name"],self.transition_freq)
+            case 't3':
+                self.NewTomogateError_ana(kwargs["var_name"],self.transition_freq)
             case 'a3':
                 self.parity_ana(kwargs["var_name"], self.refIQ, OSmodel=kwargs["OSmodel"] if "OSmodel" in kwargs else None, t_interval = kwargs["t_interval"])
             case _:
@@ -1631,6 +1818,8 @@ class Multiplex_analyzer(QCATAna,analysis_tools):
                 self.gateError_plot(pic_save_folder)
             case 't2':
                 self.TomogateError_plot(pic_save_folder)
+            case 't3':
+                self.NewTomogateError_plot(pic_save_folder)
             case 'a3':
                 self.parity_plot(pic_save_folder)
             case 's5':

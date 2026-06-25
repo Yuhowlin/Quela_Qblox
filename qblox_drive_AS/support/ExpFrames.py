@@ -288,7 +288,7 @@ class PowerCavity(ExpGovernment):
         from qblox_drive_AS.SOP.CavitySpec import QD_RO_init
         
         # set self.freq_range
-        self.ro_amp = 0.9/len(list(self.QD_agent.quantum_device.elements()))
+        self.ro_amp = 0.1/len(list(self.QD_agent.quantum_device.elements()))
         for q in self.tempor_freq[0]:
             bare = self.QD_agent.Notewriter.get_bareFreqFor(q)
             qubit:BasicTransmonElement = self.QD_agent.quantum_device.get_element(q)
@@ -3247,11 +3247,13 @@ class XTomography(ExpGovernment):
     def RawDataPath(self):
         return self.__raw_data_location
 
-    def SetParameters(self, target_q:str = "q0", init_state:str = "zero", avg_n:int = 300, gate_counts:list= range(1, 100), execution:bool = True):
+    def SetParameters(self, target_q:str = "q0", init_state:str = "zero", avg_n:int = 300, gate_counts:list= range(1, 100), execution:bool = True, control_q:str = "q0", noise_q:str = "q0"):
         self.target_q = target_q
         self.init_state = init_state
         self.avg_n = avg_n
         self.execution = execution
+        self.control_q = control_q
+        self.noise_q = noise_q
         self.gate_counts =  gate_counts# 1~99 個 X gate
 
     def PrepareHardware(self):
@@ -3285,9 +3287,15 @@ class XTomography(ExpGovernment):
         for max_gate in self.gate_counts:
             meas = XTomographyPS()
             meas.target_q = self.target_q
+            meas.control_q = self.control_q
+            meas.noise_q =self.noise_q
             meas.initial_state = self.init_state
             meas._gate_counts = list(range(max_gate,max_gate + 1))  # ✅ 每次不同的 gate range
             meas.execution = self.execution
+            # if max_gate == 0 or max_gate == 1:
+            #     meas.n_avg = 10000
+            # else:
+            #     meas.n_avg = self.avg_n
             meas.n_avg = self.avg_n
             meas.meas_ctrl = self.meas_ctrl
             meas.QD_agent = self.QD_agent
@@ -3295,10 +3303,11 @@ class XTomography(ExpGovernment):
             meas.run()
             ds = meas.dataset
             eyeson_print(f"now in gate {max_gate}")
-            if max_gate == 0:
-                datasets = ds
-            else:
-                datasets = xr.concat([datasets, ds], dim="pulse_num") 
+            if self.execution == True:
+                if max_gate == 0:
+                    datasets = ds
+                else:
+                    datasets = xr.concat([datasets, ds], dim="pulse_num") 
 
         if self.execution:
             if self.save_dir is not None:
@@ -3312,7 +3321,170 @@ class XTomography(ExpGovernment):
     def CloseMeasurement(self):
         shut_down(self.cluster, self.Fctrl)
     
+    def RunAnalysis(self, i : str = None, k : int = None, new_QD_path: str = None, new_file_path: str = None):
+        if self.execution:
+            if new_QD_path is None:
+                QD_file = self.QD_path
+            else:
+                QD_file = new_QD_path
+
+            if new_file_path is None:
+                file_path = self.__raw_data_location
+                fig_path = self.save_dir
+            else:
+                file_path = new_file_path
+                fig_path = os.path.split(new_file_path)[0]
+            if i is None:
+                pass
+            else:
+                state_type = i
+            if k is None:
+                pass
+            else:
+                shotnum = k
+            QD_savior = QDmanager(QD_file)
+            QD_savior.QD_loader()
+
+            
+            ds = open_dataset(file_path)
+            for var in ds.data_vars:
+                basenumber = var[-1]
+                if basenumber == "x":
+                    ANA = Multiplex_analyzer("t2")
+                    ANA._import_data(ds,var_dimension=0,fq_Hz=QD_savior.quantum_device.get_element(var[:2]).clock_freqs.f01())
+                    ANA._start_analysis(var_name=var[:2])
+                    pic_path = os.path.join(fig_path,f"{var[:2]}_TomoGateErrorTest_zero_amp_{state_type}_shot_5000_{datetime.now().strftime('%Y%m%d%H%M%S') if self.JOBID is None else self.JOBID}")
+                    ANA._export_result(pic_path)                
+            ds.close()
+
+    
+    def WorkFlow(self):
+        self.PrepareHardware()
+        self.RunMeasurement()
+        self.CloseMeasurement()
+
+class AdvancedTomography(ExpGovernment):
+    def __init__(self, QD_path: str, data_folder: str = None, JOBID: str = None):
+        super().__init__()
+        self.QD_path = QD_path
+        self.save_dir = data_folder
+        self.JOBID = JOBID
+        self.__raw_data_location = ""
+
+    @property
+    def RawDataPath(self):
+        return self.__raw_data_location
+
+    def SetParameters(self, qubit_configs: dict, gate_counts: list, avg_n: int = 10000, training_avg_n: int = 20000, symmetrized_readout: bool = True, execution: bool = True):
+        self.qubit_configs = qubit_configs
+        self.target_q = list(qubit_configs.keys())
+        self.gate_counts = gate_counts
+        self.avg_n = avg_n
+        self.training_avg_n = training_avg_n
+        self.symmetrized_readout = symmetrized_readout
+        self.execution = execution
+
+    def PrepareHardware(self):
+        self.QD_agent, self.cluster, self.meas_ctrl, self.ic, self.Fctrl = init_meas(QuantumDevice_path=self.QD_path)
+
+        # Bias coupler
+        self.Fctrl = coupler_zctrl(
+            self.Fctrl,
+            self.QD_agent.Fluxmanager.build_Cctrl_instructions(
+                [cp for cp in self.Fctrl if cp[0]=='c' or cp[:2]=='qc'],
+                'i'
+            )
+        )
+
+        # Set LO & Attenuation
+        for q in self.target_q:
+            self.Fctrl[q](self.QD_agent.Fluxmanager.get_proper_zbiasFor(target_q=q))
+            IF_minus = self.QD_agent.Notewriter.get_xyIFFor(q)
+            xyf = self.QD_agent.quantum_device.get_element(q).clock_freqs.f01()
+            set_LO_frequency(self.QD_agent.quantum_device, q=q, module_type='drive', LO_frequency=xyf-IF_minus)
+            init_system_atte(
+                self.QD_agent.quantum_device, [q],
+                ro_out_att=self.QD_agent.Notewriter.get_DigiAtteFor(q, 'ro'),
+                xy_out_att=self.QD_agent.Notewriter.get_DigiAtteFor(q, 'xy')
+            )
+    def RunMeasurement(self):
+        from qblox_drive_AS.support.UserFriend import eyeson_print
+        import xarray as xr
+        from qblox_drive_AS.aux_measurement.TomoGateErrorTest import AdvancedTomographyPS
+
+        # ==========================================
+        # 1. 執行一次 Training 量測
+        # ==========================================
+        eyeson_print("Starting 0/1 State Training Measurement...")
+        train_meas = AdvancedTomographyPS()
+        train_meas.target_q = self.target_q
+        train_meas.QD_agent = self.QD_agent
+        train_meas.meas_ctrl = self.meas_ctrl
+        train_meas.execution = self.execution
+        train_meas.avg_n = self.training_avg_n      # 使用高密度 shots
+        train_meas.run_mode = "training"            # ✅ 指定模式
+        
+        train_meas.run()
+        ds_train = train_meas.dataset
+        eyeson_print("Training Measurement Completed.")
+
+        # ==========================================
+        # 2. 執行 Tomography 主迴圈
+        # ==========================================
+        datasets = None
+        for current_gate_count in self.gate_counts:
+            meas = AdvancedTomographyPS()
+            meas.target_q = self.target_q
+            meas.QD_agent = self.QD_agent
+            meas.meas_ctrl = self.meas_ctrl
+            meas.execution = self.execution
+            
+            meas.avg_n = self.avg_n                 # 使用常規 shots
+            meas.symmetrized_readout = self.symmetrized_readout
+            meas.current_gate_count = current_gate_count
+            meas.qubit_configs = self.qubit_configs 
+            meas.run_mode = "tomography"            # ✅ 指定模式
+
+            meas.run()
+            ds_tomo = meas.dataset
+            eyeson_print(f"now in gate count {current_gate_count}")
+            if self.execution == True:
+                if current_gate_count == self.gate_counts[0]:
+                    datasets = ds_tomo
+                else:
+                    datasets = xr.concat([datasets, ds_tomo], dim="pulse_num") 
+
+        # ==========================================
+        # 3. 合併資料並儲存
+        # ==========================================
+        if self.execution:
+            # ✅ 將 Training 與 Tomography 合併為單一 Dataset
+            final_dataset = xr.merge([ds_train, datasets])
+
+            if self.save_dir is not None:
+                param_str = ""
+                for q, config in self.qubit_configs.items():
+                    param_str += f"{q}_{config['init_state']}{config['target_gate']}_"
+                if self.symmetrized_readout:
+                    param_str += "SymRO_"
+                    
+                time_str = datetime.now().strftime('%Y%m%d%H%M%S') if self.JOBID is None else self.JOBID
+                filename = f"AdvTomo_{param_str}{time_str}"
+                
+                self.save_path = os.path.join(self.save_dir, filename)
+                self.__raw_data_location = self.save_path + ".nc"
+                
+                # 儲存合併後的資料
+                final_dataset.to_netcdf(self.__raw_data_location)
+                eyeson_print(f"Data saved to {filename}.nc")
+            else:
+                self.save_fig_path = None
+
+    def CloseMeasurement(self):
+        shut_down(self.cluster, self.Fctrl)
+
     def RunAnalysis(self, new_QD_path: str = None, new_file_path: str = None):
+        import xarray as xr
         if self.execution:
             if new_QD_path is None:
                 QD_file = self.QD_path
@@ -3328,24 +3500,51 @@ class XTomography(ExpGovernment):
 
             QD_savior = QDmanager(QD_file)
             QD_savior.QD_loader()
-
             
-            ds = open_dataset(file_path)
+            # ✅ 取得不含副檔名的 nc 檔名 (例如：AdvTomo_q1_0X_q2_+Y90_SymRO_20260522)
+            import os
+            # 1. 取得完整主檔名，例如: "AdvTomo_q1_0X_q2_+Y90_SymRO_20260522150000"
+            base_filename = os.path.splitext(os.path.basename(file_path))[0]
+            # 切割字串 -> ['AdvTomo', 'q1', '0X', 'q2', '+Y90', 'SymRO', '20260522150000']
+            tokens = base_filename.split('_') 
+            
+            # 2. 擷取共通資訊 (時間與 SymRO)
+            timestamp = tokens[-1]
+            has_sym = "SymRO" in tokens
+
+            ds = xr.open_dataset(file_path)
             for var in ds.data_vars:
                 basenumber = var[-1]
-                if basenumber == "x":
-                    ANA = Multiplex_analyzer("t2")
-                    ANA._import_data(ds,var_dimension=0,fq_Hz=QD_savior.quantum_device.get_element(var[:2]).clock_freqs.f01())
-                    ANA._start_analysis(var_name=var[:2])
-                    pic_path = os.path.join(fig_path,f"{var[:2]}_TomoGateErrorTest_{datetime.now().strftime('%Y%m%d%H%M%S') if self.JOBID is None else self.JOBID}")
+                if basenumber in ["x"]:
+                    # var 會是 "q1_x", 取出前面的 "q1"
+                    qubit_name = var.split('_')[0] 
+                    
+                    # ✅ 3. 在 tokens 中尋找這個 qubit，並抓取它專屬的參數
+                    q_param = "Unknown"
+                    if qubit_name in tokens:
+                        idx = tokens.index(qubit_name)
+                        q_param = tokens[idx + 1]  # 緊接在 q1 後面的就是它的參數，例如 '0X'
+                    
+                    sym_str = "SymRO_" if has_sym else ""
+                    
+                    # ✅ 4. 組裝這個 qubit 乾淨、獨立的專屬檔名
+                    clean_filename = f"{qubit_name}_{q_param}_{sym_str}{timestamp}"
+                    
+                    ANA = Multiplex_analyzer("t3")
+                    ANA._import_data(ds, var_dimension=0, fq_Hz=QD_savior.quantum_device.get_element(qubit_name).clock_freqs.f01())
+                    ANA._start_analysis(var_name=qubit_name)
+                    
+                    pic_path = os.path.join(fig_path, clean_filename)
+                    
+                    # 輸出結果
                     ANA._export_result(pic_path)                
             ds.close()
-
     
     def WorkFlow(self):
         self.PrepareHardware()
         self.RunMeasurement()
         self.CloseMeasurement()
+
 
 class ParitySwitch(ExpGovernment):
     def __init__(self,QD_path:str,data_folder:str=None,JOBID:str=None):
